@@ -4,9 +4,5 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 ---
 
 <BaseLayout title="Vendara | Admin Console">
-  <main class="min-h-screen bg-[radial-gradient(circle_at_top_right,_rgba(69,95,70,0.14),_transparent_28%),linear-gradient(180deg,_rgba(248,244,236,0.95),_white)] px-4 py-8 md:px-6 md:py-10">
-    <div class="mx-auto max-w-7xl">
-      <AdminConsole client:load />
-    </div>
-  </main>
+  <AdminConsole client:load />
 </BaseLayout>

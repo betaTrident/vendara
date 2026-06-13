@@ -1,7 +1,20 @@
-import { createInternalNeonAuth } from "@neondatabase/auth";
+import { createAuthClient } from "@neondatabase/neon-js/auth";
 
-const neonAuth = createInternalNeonAuth(import.meta.env.PUBLIC_NEON_AUTH_URL);
+const authBaseUrl = import.meta.env.PUBLIC_NEON_AUTH_URL;
 
-export const authClient = neonAuth.adapter;
+const buildAuthUrl = (path: string) => `${authBaseUrl}${path}`;
 
-export const getAuthToken = () => neonAuth.getJWTToken(false);
+export const authClient = createAuthClient(authBaseUrl);
+
+export const getAuthToken = async () => {
+  const response = await fetch(buildAuthUrl("/get-session"), {
+    credentials: "include",
+    method: "GET",
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+
+  return response.headers.get("set-auth-jwt");
+};

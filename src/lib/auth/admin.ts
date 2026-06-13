@@ -8,6 +8,8 @@ import { getActiveAdminUserByEmail } from "@/lib/server/admin-users-repository";
 type NeonAdminTokenPayload = {
   sub?: string;
   email?: string;
+  emailVerified?: boolean | string | null;
+  email_verified?: boolean | string | null;
 };
 
 export type AuthenticatedAdmin = {
@@ -19,6 +21,35 @@ let cachedJwksUrl = "";
 let cachedJwks:
   | ReturnType<typeof createRemoteJWKSet>
   | null = null;
+
+export const isVerifiedEmailClaim = (value: NeonAdminTokenPayload["email_verified"]) => {
+  if (typeof value === "boolean") {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    return value.toLowerCase() === "true";
+  }
+
+  return false;
+};
+
+export const shouldAuthorizeAdmin = (payload: NeonAdminTokenPayload) => {
+  const email = typeof payload.email === "string" ? normalizeAdminEmail(payload.email) : "";
+  const userId = typeof payload.sub === "string" ? payload.sub : "";
+  const isVerified = isVerifiedEmailClaim(
+    payload.emailVerified ?? payload.email_verified,
+  );
+
+  if (!email || !userId || !isVerified) {
+    return null;
+  }
+
+  return {
+    email,
+    userId,
+  };
+};
 
 const getNeonJwks = () => {
   const jwksUrl = `${getServerEnv().publicNeonAuthUrl}/.well-known/jwks.json`;
@@ -51,14 +82,13 @@ export const getAuthenticatedAdmin = async (
 
   try {
     const payload = await verifyNeonToken(token);
-    const email = typeof payload.email === "string" ? normalizeAdminEmail(payload.email) : "";
-    const userId = typeof payload.sub === "string" ? payload.sub : "";
+    const adminCandidate = shouldAuthorizeAdmin(payload);
 
-    if (!email || !userId) {
+    if (!adminCandidate) {
       return null;
     }
 
-    const adminUser = await getActiveAdminUserByEmail(email);
+    const adminUser = await getActiveAdminUserByEmail(adminCandidate.email);
 
     if (!adminUser) {
       return null;
@@ -66,7 +96,7 @@ export const getAuthenticatedAdmin = async (
 
     return {
       email: adminUser.email,
-      userId,
+      userId: adminCandidate.userId,
     };
   } catch {
     return null;
