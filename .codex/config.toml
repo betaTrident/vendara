@@ -41,6 +41,10 @@ startup_timeout_sec = 30
 url = "https://mcp.exa.ai/mcp"
 startup_timeout_sec = 30
 
+[mcp_servers.neon]
+url = "https://mcp.neon.tech/mcp"
+startup_timeout_sec = 30
+
 [mcp_servers.supabase]
 url = "https://mcp.supabase.com/mcp"
 startup_timeout_sec = 30
