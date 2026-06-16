@@ -7,18 +7,18 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+  --font-sans: 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Geist Mono Variable', 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
 
   /* ── Radius: industrial sharp (max 8px) ── */
   --radius-sm:  4px;
   --radius-md:  6px;
   --radius-lg:  8px;
-  --radius-xl:  12px;
-  --radius-2xl: 12px;
-  --radius-3xl: 12px;
-  --radius-4xl: 12px;
+  --radius-xl:  8px;
+  --radius-2xl: 8px;
+  --radius-3xl: 8px;
+  --radius-4xl: 8px;
 
   --color-background:                 var(--background);
   --color-foreground:                 var(--foreground);
@@ -73,20 +73,20 @@
   --ia-primary:            #b02f00;
   --ia-primary-container:  #ff5722;
   --ia-on-primary:         #ffffff;
-  --ia-surface:            #f3f3f3;
-  --ia-surface-low:        #f3f3f3;
+  --ia-surface:            #f5f5f5;
+  --ia-surface-low:        #f0f0f0;
   --ia-surface-high:       #e8e8e8;
   --ia-surface-card:       #ffffff;
   --ia-on-surface:         #1a1c1c;
   --ia-secondary:          #546067;
   --ia-on-surface-variant: #5b4039;
-  --ia-outline:            #8a8a8a;
-  --ia-outline-variant:    #d1d1d1;
+  --ia-outline:            #c4c4c4;
+  --ia-outline-variant:    #e4e4e4;
   --ia-error:              #ba1a1a;
   --ia-error-container:    #ffdad6;
 
   /* ── shadcn/ui CSS variable remapping ── */
-  --background:            #f9f9f9;
+  --background:            #f5f5f5;
   --foreground:            #1a1c1c;
   --card:                  #ffffff;
   --card-foreground:       #1a1c1c;
@@ -94,16 +94,16 @@
   --popover-foreground:    #1a1c1c;
   --primary:               #ff5722;
   --primary-foreground:    #ffffff;
-  --secondary:             #f3f3f3;
+  --secondary:             #f0f0f0;
   --secondary-foreground:  #546067;
-  --muted:                 #f3f3f3;
+  --muted:                 #f0f0f0;
   --muted-foreground:      #475459;
   --accent:                #e8e8e8;
   --accent-foreground:     #1a1c1c;
   --destructive:           #ba1a1a;
   --destructive-foreground:#ffffff;
-  --border:                rgba(0, 0, 0, 0.08);
-  --input:                 rgba(0, 0, 0, 0.12);
+  --border:                rgba(0, 0, 0, 0.07);
+  --input:                 rgba(0, 0, 0, 0.10);
   --ring:                  #ff5722;
 
   --radius: 0.25rem; /* 4px */
@@ -120,22 +120,23 @@
   --sidebar-foreground:         #1a1c1c;
   --sidebar-primary:            #b02f00;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent:             #f3f3f3;
+  --sidebar-accent:             #f0f0f0;
   --sidebar-accent-foreground:  #1a1c1c;
-  --sidebar-border:             rgba(0, 0, 0, 0.08);
+  --sidebar-border:             rgba(0, 0, 0, 0.07);
   --sidebar-ring:               #ff5722;
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-gutter: stable;
 }
 
 body {
   margin: 0;
   min-width: 320px;
-  min-height: 100vh;
+  min-height: 100dvh;
   background-color: var(--ia-surface);
   color: var(--ia-on-surface);
-}
-
-html {
-  scrollbar-gutter: stable;
 }
 
 @layer base {
@@ -148,51 +149,155 @@ html {
   html {
     @apply font-sans antialiased;
   }
+  h1, h2, h3, h4, h5, h6 {
+    text-wrap: balance;
+  }
 }
 
 /* ══════════════════════════════════════════
    INDUSTRIAL ATELIER DESIGN UTILITIES
 ══════════════════════════════════════════ */
 @layer utilities {
+
   /* Signature gradient: 135° primary → Racing Orange */
   .ia-gradient {
     background: linear-gradient(135deg, var(--ia-primary) 0%, var(--ia-primary-container) 100%);
   }
 
-  /* Card header "well" - surface-container-high */
+  /* Brand panel gradient (left dark panel on login) */
+  .ia-brand-gradient {
+    background: linear-gradient(150deg, #1a0800 0%, #2d0f00 40%, #3d1800 100%);
+  }
+
+  /* Card header "well" - surface-container-high, with subtle left accent */
   .ia-well {
     background-color: var(--ia-surface-high);
     border-bottom: 1px solid var(--ia-outline-variant);
-    padding: 1rem 1.5rem;
+    padding: 0.875rem 1.25rem;
+    position: relative;
+  }
+  .ia-well::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--ia-primary-container);
+    opacity: 0;
+    transition: opacity 0.2s ease;
   }
 
-  /* Label scale: 10px all-caps bold tracking */
+  /* Label scale: 11px all-caps bold tracking */
   .ia-label {
-    font-size: 0.625rem;
+    font-size: 0.6875rem;
     font-weight: 700;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--ia-secondary);
   }
 
-  /* Status chip colors — dark mode aware */
-  .ia-chip-green  { @apply bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400; }
-  .ia-chip-orange { @apply bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400; }
-  .ia-chip-red    { @apply bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400; }
-  .ia-chip-yellow { @apply bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400; }
+  /* Status chip colors */
+  .ia-chip-green  { @apply bg-emerald-50 text-emerald-700 border border-emerald-200/60; }
+  .ia-chip-orange { @apply bg-orange-50 text-orange-700 border border-orange-200/60; }
+  .ia-chip-red    { @apply bg-red-50 text-red-700 border border-red-200/60; }
+  .ia-chip-yellow { @apply bg-amber-50 text-amber-700 border border-amber-200/60; }
+  .ia-chip-blue   { @apply bg-blue-50 text-blue-700 border border-blue-200/60; }
 
-  /* Progress bar - thin 1px industrial style */
+  /* Progress bar - thin 2px industrial style */
   .ia-progress-track {
-    height: 4px;
+    height: 2px;
     background-color: var(--ia-surface-high);
-    border-radius: 2px;
+    border-radius: 1px;
     overflow: hidden;
   }
   .ia-progress-fill {
     height: 100%;
     background-color: var(--ia-primary-container);
-    border-radius: 2px;
+    border-radius: 1px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
+
+  /* Stat card tile */
+  .ia-stat-card {
+    background: var(--ia-surface-card);
+    border: 1px solid var(--ia-outline-variant);
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .ia-stat-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--ia-primary-container) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  .ia-stat-card:hover::after {
+    opacity: 1;
+  }
+
+  /* Skeleton shimmer loading animation */
+  .ia-skeleton {
+    background: linear-gradient(90deg,
+      var(--ia-surface-high) 25%,
+      var(--ia-surface-low) 50%,
+      var(--ia-surface-high) 75%
+    );
+    background-size: 200% 100%;
+    animation: ia-shimmer 1.6s ease-in-out infinite;
+    border-radius: 4px;
+  }
+
+  /* Stagger animation helpers */
+  .ia-stagger-1 { animation-delay: 0ms; }
+  .ia-stagger-2 { animation-delay: 60ms; }
+  .ia-stagger-3 { animation-delay: 120ms; }
+  .ia-stagger-4 { animation-delay: 180ms; }
+  .ia-stagger-5 { animation-delay: 240ms; }
+  .ia-stagger-6 { animation-delay: 300ms; }
+
+  /* Slide-up entry */
+  .ia-slide-up {
+    animation: ia-slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+
+  /* Fade-in entry */
+  .ia-fade-in {
+    animation: ia-fade-in 0.25s ease both;
+  }
+}
+
+/* ── Keyframes ── */
+@keyframes ia-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes ia-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ia-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes ia-pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.8); }
 }
 
 /* ── Scrollbar: thin industrial style ── */
@@ -208,10 +313,41 @@ html {
   .ia-mobile-input-zoom-fix textarea {
     font-size: 16px !important;
   }
-  
+
   /* Standard 44px mobile touch targets */
   .touch-target {
     min-height: 44px;
     min-width: 44px;
+  }
+
+  /* Tabular numbers for financial data */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Initials avatar */
+  .ia-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 6px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    user-select: none;
+  }
+
+  /* Pulse dot for outstanding credit indicator */
+  .ia-pulse-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #ba1a1a;
+    animation: ia-pulse-dot 1.8s ease-in-out infinite;
   }
 }
