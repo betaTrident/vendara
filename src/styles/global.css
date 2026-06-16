@@ -85,6 +85,19 @@
   --ia-error:              #ba1a1a;
   --ia-error-container:    #ffdad6;
 
+  /* ── Extended semantic tokens ── */
+  --ia-surface-overlay:    rgba(255, 87, 34, 0.05);
+  --ia-primary-subtle:     rgba(176, 47, 0, 0.06);
+  --ia-success:            #16a34a;
+  --ia-success-container:  #dcfce7;
+  --ia-warning:            #d97706;
+  --ia-warning-container:  #fef3c7;
+
+  /* ── Shadow scale ── */
+  --shadow-card:     0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-elevated: 0 4px 12px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-focus:    0 0 0 3px rgba(255, 87, 34, 0.18);
+
   /* ── shadcn/ui CSS variable remapping ── */
   --background:            #f5f5f5;
   --foreground:            #1a1c1c;
@@ -203,6 +216,35 @@ body {
   .ia-chip-red    { @apply bg-red-50 text-red-700 border border-red-200/60; }
   .ia-chip-yellow { @apply bg-amber-50 text-amber-700 border border-amber-200/60; }
   .ia-chip-blue   { @apply bg-blue-50 text-blue-700 border border-blue-200/60; }
+  .ia-chip-green-solid { background: var(--ia-success-container); color: var(--ia-success); }
+
+  /* Filter chip — for public catalog category filters */
+  .ia-filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 14px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid var(--ia-outline-variant);
+    background: var(--ia-surface-card);
+    color: var(--ia-secondary);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 150ms ease;
+    user-select: none;
+  }
+  .ia-filter-chip:hover {
+    border-color: var(--ia-outline);
+    color: var(--ia-on-surface);
+    background: var(--ia-surface-high);
+  }
+  .ia-filter-chip[data-active="true"] {
+    background: var(--ia-primary-container);
+    border-color: var(--ia-primary-container);
+    color: var(--ia-on-primary);
+  }
 
   /* Progress bar - thin 2px industrial style */
   .ia-progress-track {
@@ -223,9 +265,15 @@ body {
     background: var(--ia-surface-card);
     border: 1px solid var(--ia-outline-variant);
     border-radius: 8px;
-    padding: 1.25rem 1.5rem;
+    padding: 1.375rem 1.5rem;
     position: relative;
     overflow: hidden;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 200ms ease, border-color 200ms ease;
+  }
+  .ia-stat-card:hover {
+    box-shadow: var(--shadow-elevated);
+    border-color: var(--ia-outline);
   }
   .ia-stat-card::after {
     content: '';
@@ -236,10 +284,18 @@ body {
     height: 2px;
     background: linear-gradient(90deg, var(--ia-primary-container) 0%, transparent 100%);
     opacity: 0;
-    transition: opacity 0.2s ease;
+    transition: opacity 200ms ease;
   }
   .ia-stat-card:hover::after {
     opacity: 1;
+  }
+  /* Error-accented stat card */
+  .ia-stat-card--error {
+    border-color: rgba(186, 26, 26, 0.2);
+    background: rgba(255, 218, 214, 0.12);
+  }
+  .ia-stat-card--error::after {
+    background: linear-gradient(90deg, var(--ia-error) 0%, transparent 100%);
   }
 
   /* Skeleton shimmer loading animation */
@@ -271,6 +327,124 @@ body {
   .ia-fade-in {
     animation: ia-fade-in 0.25s ease both;
   }
+
+  /* ── Split-pane layout for Customers/Ledger tab ── */
+  .ia-split-pane {
+    display: flex;
+    height: calc(100vh - 220px);
+    min-height: 520px;
+    border: 1px solid var(--ia-outline-variant);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--ia-surface-card);
+    box-shadow: var(--shadow-card);
+  }
+  .ia-split-pane__list {
+    width: 280px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--ia-outline-variant);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .ia-split-pane__detail {
+    flex: 1;
+    overflow-y: auto;
+    min-width: 0;
+  }
+
+  /* ── Toolbar: action bar at top of tab content ── */
+  .ia-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .ia-toolbar__left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+  }
+  .ia-toolbar__right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  /* ── Form field wrapper ── */
+  .ia-form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .ia-form-field label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ia-secondary);
+  }
+
+  /* ── Customer list item in split-pane ── */
+  .ia-customer-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--ia-outline-variant);
+    cursor: pointer;
+    position: relative;
+    transition: background 150ms ease;
+  }
+  .ia-customer-item:hover {
+    background: var(--ia-surface-low);
+  }
+  .ia-customer-item[data-active="true"] {
+    background: var(--ia-surface-overlay);
+    border-left: 2px solid var(--ia-primary-container);
+    padding-left: 14px;
+  }
+  .ia-customer-item[data-active="true"] .ia-customer-item__name {
+    color: var(--ia-on-surface);
+    font-weight: 600;
+  }
+
+  /* ── Product card hover (for public catalog) ── */
+  .ia-product-card {
+    position: relative;
+    background: var(--ia-surface-card);
+    border: 1px solid var(--ia-outline-variant);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 200ms ease, border-color 200ms ease, transform 200ms ease;
+  }
+  .ia-product-card:hover {
+    box-shadow: var(--shadow-elevated);
+    border-color: rgba(255, 87, 34, 0.35);
+    transform: translateY(-1px);
+  }
+  .ia-product-card__accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--ia-primary-container);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 250ms ease-out;
+  }
+  .ia-product-card:hover .ia-product-card__accent {
+    transform: scaleX(1);
+  }
+
+  /* ── Markup badge color variants ── */
+  .ia-markup-low  { @apply bg-amber-50 text-amber-700 border border-amber-200/60; }
+  .ia-markup-good { @apply bg-emerald-50 text-emerald-700 border border-emerald-200/60; }
+  .ia-markup-high { @apply bg-orange-50 text-orange-700 border border-orange-200/60; }
 }
 
 /* ── Keyframes ── */

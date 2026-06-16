@@ -1,4 +1,4 @@
-import { LogOut, Lock } from "lucide-react";
+import { LogOut, Lock, ShieldCheck } from "lucide-react";
 
 interface AppTopBarProps {
   isAuthenticated?: boolean;
@@ -28,8 +28,11 @@ const VendaraLogo = () => (
 export const AppTopBar = ({ isAuthenticated, onLogout }: AppTopBarProps) => {
   return (
     <header
-      className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-ia-outline-variant"
-      style={{ height: "56px" }}
+      className="sticky top-0 z-50 w-full bg-white/88 backdrop-blur-lg border-b border-ia-outline-variant"
+      style={{
+        height: "60px",
+        boxShadow: "0 1px 0 rgba(0,0,0,0.06)",
+      }}
     >
       <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6">
 
@@ -40,9 +43,16 @@ export const AppTopBar = ({ isAuthenticated, onLogout }: AppTopBarProps) => {
           aria-label="Vendara home"
         >
           <VendaraLogo />
-          <span className="text-sm font-semibold tracking-[-0.32px] text-ia-on-surface group-hover:text-ia-primary transition-colors">
-            Vendara
-          </span>
+          <div className="flex flex-col">
+            <span className="text-sm font-semibold tracking-[-0.32px] text-ia-on-surface group-hover:text-ia-primary transition-colors leading-none">
+              Vendara
+            </span>
+            {isAuthenticated && (
+              <span className="text-[10px] font-medium text-ia-secondary/70 leading-none mt-0.5 tracking-wide">
+                Admin Console
+              </span>
+            )}
+          </div>
         </a>
 
         {/* Right — Auth Actions */}
@@ -51,7 +61,7 @@ export const AppTopBar = ({ isAuthenticated, onLogout }: AppTopBarProps) => {
             <button
               id="topbar-signout-btn"
               onClick={onLogout}
-              className="inline-flex h-8 items-center gap-1.5 rounded-md border border-ia-outline-variant bg-ia-surface px-3 text-xs font-medium text-ia-secondary hover:bg-ia-surface-high hover:text-ia-on-surface hover:border-ia-outline transition-all duration-150 cursor-pointer"
+              className="inline-flex h-8 items-center gap-1.5 rounded-md border border-ia-outline-variant bg-ia-surface px-3 text-xs font-medium text-ia-secondary hover:bg-red-50 hover:text-ia-error hover:border-red-200 transition-all duration-150 cursor-pointer"
             >
               <LogOut className="size-3.5 shrink-0" />
               <span>Sign out</span>
@@ -60,9 +70,10 @@ export const AppTopBar = ({ isAuthenticated, onLogout }: AppTopBarProps) => {
             <a
               id="topbar-admin-signin-link"
               href="/admin"
-              className="inline-flex h-8 items-center gap-1.5 rounded-md bg-ia-primary-container px-3 text-xs font-semibold text-ia-on-primary hover:bg-ia-primary active:scale-[0.97] transition-all duration-150 cursor-pointer shadow-sm"
+              className="inline-flex h-8 items-center gap-1.5 rounded-md bg-ia-primary-container px-3.5 text-xs font-semibold text-ia-on-primary hover:bg-ia-primary active:scale-[0.97] transition-all duration-150 cursor-pointer"
+              style={{ boxShadow: "var(--shadow-card)" }}
             >
-              <Lock className="size-3 shrink-0" />
+              <ShieldCheck className="size-3.5 shrink-0" />
               <span>Admin sign in</span>
             </a>
           )}

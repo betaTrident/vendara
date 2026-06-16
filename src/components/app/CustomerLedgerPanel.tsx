@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { Plus, Trash2, Calendar, ShoppingBag, CreditCard, User, RefreshCw } from "lucide-react";
+import { Plus, Trash2, Calendar, ShoppingBag, CreditCard, User, RefreshCw, ChevronDown, ChevronUp } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -41,6 +41,10 @@ export const CustomerLedgerPanel = ({
   const [debtRows, setDebtRows] = useState([emptyDebtRow]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Accordion state
+  const [isPurchaseOpen, setIsPurchaseOpen] = useState(false);
+  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+
   const loadLedger = async () => {
     if (!customer) {
       setLedger([]);
@@ -57,6 +61,8 @@ export const CustomerLedgerPanel = ({
 
   useEffect(() => {
     void loadLedger();
+    setIsPurchaseOpen(false);
+    setIsPaymentOpen(false);
   }, [customer?.id]);
 
   const debtSubtotal = useMemo(() => {
@@ -115,6 +121,7 @@ export const CustomerLedgerPanel = ({
 
       setDebtRows([emptyDebtRow]);
       setDebtNote("");
+      setIsPurchaseOpen(false);
       await loadLedger();
       await onCustomerMutated();
     } finally {
@@ -139,6 +146,7 @@ export const CustomerLedgerPanel = ({
 
       setPaymentAmount("");
       setPaymentNote("");
+      setIsPaymentOpen(false);
       await loadLedger();
       await onCustomerMutated();
     } finally {
@@ -167,63 +175,49 @@ export const CustomerLedgerPanel = ({
   };
 
   return (
-    <div className="space-y-4 ia-fade-in">
+    <div className="space-y-5 ia-fade-in">
 
-      {/* ── Account Profile & Balance Banner ── */}
-      <Card className="rounded-lg border border-ia-outline-variant bg-ia-surface-card overflow-hidden shadow-sm">
-        <div
-          className="p-6 sm:p-7 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5"
-          style={customer.balance > 0 ? {} : undefined}
-        >
-          <div className="space-y-0.5">
-            <span className="ia-label">Account profile</span>
-            <h2 className="text-xl font-semibold tracking-[-0.4px] text-ia-on-surface mt-1">
+      {/* ── Account Profile Header Strip ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-ia-outline-variant">
+        <div>
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <h2 className="text-xl font-bold tracking-tight text-ia-on-surface">
               {customer.name}
             </h2>
-            {customer.note ? (
-              <p className="text-xs text-ia-secondary italic leading-relaxed">
-                "{customer.note}"
-              </p>
-            ) : (
-              <p className="text-xs text-ia-secondary/60">No notes on file.</p>
-            )}
-          </div>
-
-          <div
-            className={`sm:text-right shrink-0 rounded-lg p-4 sm:p-5 border ${
-              customer.balance > 0
-                ? "bg-red-50 border-red-100"
-                : "bg-ia-surface border-ia-outline-variant"
-            }`}
-          >
-            <span className="ia-label block mb-1">Running credit balance</span>
-            <div className="flex items-baseline gap-1 sm:justify-end">
-              <span
-                className={`text-[1.75rem] font-semibold tracking-[-0.6px] font-mono tabular-nums leading-none ${
-                  customer.balance > 0 ? "text-ia-error" : "text-ia-on-surface"
-                }`}
-              >
-                ₱{customer.balance.toFixed(2)}
-              </span>
-            </div>
             {customer.balance > 0 ? (
-              <div className="flex items-center gap-1.5 mt-1.5 sm:justify-end">
-                <span className="ia-pulse-dot" />
-                <span className="text-[10px] font-semibold text-ia-error font-mono">
-                  Outstanding credit
-                </span>
-              </div>
+              <Badge className="rounded-md ia-chip-red text-[10px] font-mono px-2 py-0.5 font-semibold">
+                Outstanding
+              </Badge>
             ) : (
-              <span className="text-[10px] font-medium text-ia-secondary mt-1.5 inline-block">
-                Account settled
-              </span>
+              <Badge className="rounded-md ia-chip-green text-[10px] font-mono px-2 py-0.5 font-semibold">
+                Settled
+              </Badge>
             )}
           </div>
+          {customer.note ? (
+            <p className="text-xs text-ia-secondary italic mt-1 leading-relaxed">
+              "{customer.note}"
+            </p>
+          ) : (
+            <p className="text-xs text-ia-secondary/50 mt-1">No notes on file</p>
+          )}
         </div>
-      </Card>
+
+        <div className="flex items-center gap-3 bg-ia-surface border border-ia-outline-variant rounded-md py-1.5 px-3 shadow-sm select-none shrink-0 self-start sm:self-center">
+          <div className="text-right">
+            <span className="ia-label block text-[9px] text-ia-secondary/70 leading-none mb-1">Running Credit Balance</span>
+            <span className={`text-xl font-bold font-mono tabular-nums leading-none ${
+              customer.balance > 0 ? "text-ia-error" : "text-ia-on-surface"
+            }`}>
+              ₱{customer.balance.toFixed(2)}
+            </span>
+          </div>
+          {customer.balance > 0 && <span className="ia-pulse-dot" />}
+        </div>
+      </div>
 
       {/* ── Date Toolbar ── */}
-      <div className="flex items-center gap-3 rounded-md border border-ia-outline-variant bg-ia-surface-card p-3.5">
+      <div className="flex items-center gap-3 rounded-md border border-ia-outline-variant bg-ia-surface-card p-3 shadow-sm">
         <Calendar className="size-4 text-ia-secondary shrink-0" />
         <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <Label htmlFor="entry-date" className="text-xs font-semibold text-ia-secondary">
@@ -239,199 +233,226 @@ export const CustomerLedgerPanel = ({
         </div>
       </div>
 
-      {/* ── Transaction Entry Forms ── */}
-      <div className="grid gap-4 sm:grid-cols-2 items-start">
-
-        {/* Credit/Debt Builder */}
-        <Card className="rounded-lg border border-ia-outline-variant bg-ia-surface-card overflow-hidden shadow-sm">
-          <CardHeader className="ia-well">
-            <CardTitle className="font-heading text-sm font-semibold tracking-tight text-ia-on-surface flex items-center gap-2">
-              <ShoppingBag className="size-4 text-ia-secondary" />
-              Log credit purchase
-            </CardTitle>
-            <CardDescription className="text-xs text-ia-secondary mt-0.5">
-              Add products to customer's outstanding balance.
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent className="p-5 space-y-4">
-            <div className="space-y-2.5">
-              {debtRows.map((row, index) => {
-                const product = products.find((p) => p.id === row.productId);
-                const lineTotal = product ? product.sellingPrice * Number(row.quantity) : 0;
-
-                return (
-                  <div
-                    key={index}
-                    className="flex flex-col gap-2 p-3 rounded-md border border-ia-outline-variant bg-ia-surface ia-slide-up"
-                  >
-                    <div className="grid gap-2 grid-cols-[1fr_76px]">
-                      <select
-                        id={`debt-product-${index}`}
-                        className="h-9 text-xs rounded-md border border-ia-outline-variant bg-ia-surface-card px-2.5 text-ia-on-surface focus:outline-none focus:border-ia-primary-container focus:ring-1 focus:ring-ia-primary-container transition-colors"
-                        value={row.productId}
-                        onChange={(event) =>
-                          setDebtRows((current) =>
-                            current.map((entry, entryIndex) =>
-                              entryIndex === index
-                                ? { ...entry, productId: event.target.value }
-                                : entry,
-                            ),
-                          )
-                        }
-                      >
-                        <option value="">Select product...</option>
-                        {products.map((p) => (
-                          <option key={p.id} value={p.id}>
-                            {p.name} — ₱{p.sellingPrice.toFixed(2)}
-                          </option>
-                        ))}
-                      </select>
-
-                      <Input
-                        type="number"
-                        min="1"
-                        placeholder="Qty"
-                        value={row.quantity}
-                        onChange={(event) =>
-                          setDebtRows((current) =>
-                            current.map((entry, entryIndex) =>
-                              entryIndex === index
-                                ? { ...entry, quantity: event.target.value }
-                                : entry,
-                            ),
-                          )
-                        }
-                        className="h-9 rounded-md border border-ia-outline-variant bg-ia-surface-card text-xs font-mono text-center text-ia-on-surface focus-visible:ring-1 focus-visible:ring-ia-primary-container focus-visible:border-ia-primary-container transition-colors"
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-between text-[11px] pt-0.5">
-                      <span className="text-ia-secondary font-mono">
-                        {product
-                          ? `₱${product.sellingPrice.toFixed(2)} each`
-                          : "Choose a product"}
-                      </span>
-                      <div className="flex items-center gap-2.5">
-                        <span className="font-semibold text-ia-on-surface font-mono tabular-nums">
-                          ₱{lineTotal.toFixed(2)}
-                        </span>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => handleRemoveRow(index)}
-                          className="h-6 w-6 p-0 border border-ia-outline-variant bg-ia-surface-card hover:bg-red-50 hover:text-ia-error hover:border-red-200 text-ia-secondary rounded-md transition-colors cursor-pointer"
-                          title="Remove item"
-                        >
-                          <Trash2 className="size-3" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setDebtRows((current) => [...current, emptyDebtRow])}
-              className="h-8.5 rounded-md border border-dashed border-ia-outline bg-transparent hover:bg-ia-surface hover:text-ia-on-surface text-ia-secondary text-xs font-medium transition-colors cursor-pointer w-full"
-            >
-              <Plus className="size-3.5 mr-1" />
-              Add item row
-            </Button>
-
-            {debtSubtotal > 0 && (
-              <div className="rounded-md bg-ia-surface border border-ia-outline-variant p-3 flex items-center justify-between ia-fade-in">
-                <span className="ia-label">Statement subtotal</span>
-                <span className="text-sm font-semibold text-ia-on-surface font-mono tabular-nums">
-                  ₱{debtSubtotal.toFixed(2)}
+      {/* ── Collapsible Transaction Forms ── */}
+      <div className="grid gap-3">
+        {/* Accordion 1: Log credit purchase */}
+        <div className="rounded-lg border border-ia-outline-variant bg-ia-surface-card overflow-hidden shadow-sm transition-all duration-200">
+          <button
+            type="button"
+            onClick={() => {
+              setIsPurchaseOpen(!isPurchaseOpen);
+              if (!isPurchaseOpen) setIsPaymentOpen(false);
+            }}
+            className="w-full text-left ia-well flex items-center justify-between hover:bg-ia-surface-low transition-colors cursor-pointer select-none"
+          >
+            <div className="flex items-center gap-2.5">
+              <ShoppingBag className="size-4 text-ia-secondary shrink-0" />
+              <div>
+                <span className="font-heading text-sm font-semibold tracking-tight text-ia-on-surface">
+                  Log credit purchase
+                </span>
+                <span className="text-[11px] text-ia-secondary/70 block font-normal mt-0.5 leading-none">
+                  Add products to customer's outstanding balance
                 </span>
               </div>
-            )}
-
-            <div className="space-y-1.5">
-              <Label htmlFor="debt-note" className="text-xs font-semibold text-ia-secondary">
-                Credit memo <span className="font-normal text-ia-secondary/60">(optional)</span>
-              </Label>
-              <Textarea
-                id="debt-note"
-                placeholder="Purchase details, or reference notes..."
-                value={debtNote}
-                onChange={(event) => setDebtNote(event.target.value)}
-                className="min-h-[60px] rounded-md border border-ia-outline-variant bg-ia-surface text-xs text-ia-on-surface placeholder:text-ia-secondary/40 focus-visible:ring-1 focus-visible:ring-ia-primary-container focus-visible:border-ia-primary-container w-full resize-none p-2.5 transition-colors"
-              />
             </div>
+            {isPurchaseOpen ? <ChevronUp className="size-4 text-ia-secondary shrink-0" /> : <ChevronDown className="size-4 text-ia-secondary shrink-0" />}
+          </button>
 
-            <Button
-              id="post-debt-btn"
-              type="button"
-              onClick={() => void handleCreateDebt()}
-              disabled={isSubmitting || debtSubtotal === 0}
-              className="h-9 w-full rounded-md bg-ia-primary-container text-ia-on-primary font-semibold text-xs transition-all hover:bg-ia-primary active:scale-[0.97] shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Post credit statement
-            </Button>
-          </CardContent>
-        </Card>
+          {isPurchaseOpen && (
+            <div className="p-5 space-y-4 border-t border-ia-outline-variant bg-ia-surface-card ia-slide-up">
+              <div className="space-y-2.5">
+                {debtRows.map((row, index) => {
+                  const product = products.find((p) => p.id === row.productId);
+                  const lineTotal = product ? product.sellingPrice * Number(row.quantity) : 0;
 
-        {/* Payment Record */}
-        <Card className="rounded-lg border border-ia-outline-variant bg-ia-surface-card overflow-hidden shadow-sm">
-          <CardHeader className="ia-well">
-            <CardTitle className="font-heading text-sm font-semibold tracking-tight text-ia-on-surface flex items-center gap-2">
-              <CreditCard className="size-4 text-ia-secondary" />
-              Record payment
-            </CardTitle>
-            <CardDescription className="text-xs text-ia-secondary mt-0.5">
-              Apply received payment to reduce outstanding balance.
-            </CardDescription>
-          </CardHeader>
+                  return (
+                    <div
+                      key={index}
+                      className="flex flex-col gap-2 p-3 rounded-md border border-ia-outline-variant bg-ia-surface ia-slide-up"
+                    >
+                      <div className="grid gap-2 grid-cols-[1fr_76px]">
+                        <select
+                          id={`debt-product-${index}`}
+                          className="h-9 text-xs rounded-md border border-ia-outline-variant bg-ia-surface-card px-2.5 text-ia-on-surface focus:outline-none focus:border-ia-primary-container focus:ring-1 focus:ring-ia-primary-container transition-colors"
+                          value={row.productId}
+                          onChange={(event) =>
+                            setDebtRows((current) =>
+                              current.map((entry, entryIndex) =>
+                                entryIndex === index
+                                  ? { ...entry, productId: event.target.value }
+                                  : entry,
+                              ),
+                            )
+                          }
+                        >
+                          <option value="">Select product...</option>
+                          {products.map((p) => (
+                            <option key={p.id} value={p.id}>
+                              {p.name} — ₱{p.sellingPrice.toFixed(2)}
+                            </option>
+                          ))}
+                        </select>
 
-          <CardContent className="p-5 space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="payment-amount" className="text-xs font-semibold text-ia-secondary">
-                Payment amount (₱)
-              </Label>
-              <div className="relative flex items-center">
-                <span className="absolute left-3 text-ia-secondary/50 text-xs font-medium font-mono">₱</span>
-                <Input
-                  id="payment-amount"
-                  type="number"
-                  step="0.01"
-                  placeholder="0.00"
-                  value={paymentAmount}
-                  onChange={(event) => setPaymentAmount(event.target.value)}
-                  className="h-10 pl-7 rounded-md border border-ia-outline-variant bg-ia-surface text-sm text-ia-on-surface font-mono placeholder:text-ia-secondary/40 focus-visible:ring-1 focus-visible:ring-ia-primary-container focus-visible:border-ia-primary-container w-full transition-colors"
-                  required
+                        <Input
+                          type="number"
+                          min="1"
+                          placeholder="Qty"
+                          value={row.quantity}
+                          onChange={(event) =>
+                            setDebtRows((current) =>
+                              current.map((entry, entryIndex) =>
+                                entryIndex === index
+                                  ? { ...entry, quantity: event.target.value }
+                                  : entry,
+                              ),
+                            )
+                          }
+                          className="h-9 rounded-md border border-ia-outline-variant bg-ia-surface-card text-xs font-mono text-center text-ia-on-surface focus-visible:ring-1 focus-visible:ring-ia-primary-container focus-visible:border-ia-primary-container transition-colors"
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between text-[11px] pt-0.5">
+                        <span className="text-ia-secondary font-mono">
+                          {product
+                            ? `₱${product.sellingPrice.toFixed(2)} each`
+                            : "Choose a product"}
+                        </span>
+                        <div className="flex items-center gap-2.5">
+                          <span className="font-semibold text-ia-on-surface font-mono tabular-nums">
+                            ₱{lineTotal.toFixed(2)}
+                          </span>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => handleRemoveRow(index)}
+                            className="h-6 w-6 p-0 border border-ia-outline-variant bg-ia-surface-card hover:bg-red-50 hover:text-ia-error hover:border-red-200 text-ia-secondary rounded-md transition-colors cursor-pointer"
+                            title="Remove item"
+                          >
+                            <Trash2 className="size-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setDebtRows((current) => [...current, emptyDebtRow])}
+                className="h-8.5 rounded-md border border-dashed border-ia-outline bg-transparent hover:bg-ia-surface hover:text-ia-on-surface text-ia-secondary text-xs font-medium transition-colors cursor-pointer w-full"
+              >
+                <Plus className="size-3.5 mr-1" />
+                Add item row
+              </Button>
+
+              {debtSubtotal > 0 && (
+                <div className="rounded-md bg-ia-surface border border-ia-outline-variant p-3 flex items-center justify-between ia-fade-in">
+                  <span className="ia-label">Statement subtotal</span>
+                  <span className="text-sm font-semibold text-ia-on-surface font-mono tabular-nums">
+                    ₱{debtSubtotal.toFixed(2)}
+                  </span>
+                </div>
+              )}
+
+              <div className="space-y-1.5">
+                <Label htmlFor="debt-note" className="text-xs font-semibold text-ia-secondary">
+                  Credit memo <span className="font-normal text-ia-secondary/60">(optional)</span>
+                </Label>
+                <Textarea
+                  id="debt-note"
+                  placeholder="Purchase details, or reference notes..."
+                  value={debtNote}
+                  onChange={(event) => setDebtNote(event.target.value)}
+                  className="min-h-[60px] rounded-md border border-ia-outline-variant bg-ia-surface text-xs text-ia-on-surface placeholder:text-ia-secondary/40 focus-visible:ring-1 focus-visible:ring-ia-primary-container focus-visible:border-ia-primary-container w-full resize-none p-2.5 transition-colors"
                 />
               </div>
-            </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="payment-note" className="text-xs font-semibold text-ia-secondary">
-                Payment memo <span className="font-normal text-ia-secondary/60">(optional)</span>
-              </Label>
-              <Textarea
-                id="payment-note"
-                placeholder="GCash ref code, cash receipt, or other details..."
-                value={paymentNote}
-                onChange={(event) => setPaymentNote(event.target.value)}
-                className="min-h-[72px] rounded-md border border-ia-outline-variant bg-ia-surface text-xs text-ia-on-surface placeholder:text-ia-secondary/40 focus-visible:ring-1 focus-visible:ring-ia-primary-container focus-visible:border-ia-primary-container w-full resize-none p-2.5 transition-colors"
-              />
+              <Button
+                id="post-debt-btn"
+                type="button"
+                onClick={() => void handleCreateDebt()}
+                disabled={isSubmitting || debtSubtotal === 0}
+                className="h-9 w-full rounded-md bg-ia-primary-container text-ia-on-primary font-semibold text-xs transition-all hover:bg-ia-primary active:scale-[0.97] shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Post credit statement
+              </Button>
             </div>
+          )}
+        </div>
 
-            <Button
-              id="post-payment-btn"
-              type="button"
-              onClick={() => void handleCreatePayment()}
-              disabled={isSubmitting || !paymentAmount}
-              className="h-9 w-full rounded-md bg-ia-primary-container text-ia-on-primary font-semibold text-xs transition-all hover:bg-ia-primary active:scale-[0.97] shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Post payment record
-            </Button>
-          </CardContent>
-        </Card>
+        {/* Accordion 2: Record payment */}
+        <div className="rounded-lg border border-ia-outline-variant bg-ia-surface-card overflow-hidden shadow-sm transition-all duration-200">
+          <button
+            type="button"
+            onClick={() => {
+              setIsPaymentOpen(!isPaymentOpen);
+              if (!isPaymentOpen) setIsPurchaseOpen(false);
+            }}
+            className="w-full text-left ia-well flex items-center justify-between hover:bg-ia-surface-low transition-colors cursor-pointer select-none"
+          >
+            <div className="flex items-center gap-2.5">
+              <CreditCard className="size-4 text-ia-secondary shrink-0" />
+              <div>
+                <span className="font-heading text-sm font-semibold tracking-tight text-ia-on-surface">
+                  Record payment
+                </span>
+                <span className="text-[11px] text-ia-secondary/70 block font-normal mt-0.5 leading-none">
+                  Apply received payment to reduce outstanding balance
+                </span>
+              </div>
+            </div>
+            {isPaymentOpen ? <ChevronUp className="size-4 text-ia-secondary shrink-0" /> : <ChevronDown className="size-4 text-ia-secondary shrink-0" />}
+          </button>
+
+          {isPaymentOpen && (
+            <div className="p-5 space-y-4 border-t border-ia-outline-variant bg-ia-surface-card ia-slide-up">
+              <div className="space-y-1.5">
+                <Label htmlFor="payment-amount" className="text-xs font-semibold text-ia-secondary">
+                  Payment amount (₱)
+                </Label>
+                <div className="relative flex items-center">
+                  <span className="absolute left-3 text-ia-secondary/50 text-xs font-medium font-mono">₱</span>
+                  <Input
+                    id="payment-amount"
+                    type="number"
+                    step="0.01"
+                    placeholder="0.00"
+                    value={paymentAmount}
+                    onChange={(event) => setPaymentAmount(event.target.value)}
+                    className="h-10 pl-7 rounded-md border border-ia-outline-variant bg-ia-surface text-sm text-ia-on-surface font-mono placeholder:text-ia-secondary/40 focus-visible:ring-1 focus-visible:ring-ia-primary-container focus-visible:border-ia-primary-container w-full transition-colors"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="payment-note" className="text-xs font-semibold text-ia-secondary">
+                  Payment memo <span className="font-normal text-ia-secondary/60">(optional)</span>
+                </Label>
+                <Textarea
+                  id="payment-note"
+                  placeholder="GCash ref code, cash receipt, or other details..."
+                  value={paymentNote}
+                  onChange={(event) => setPaymentNote(event.target.value)}
+                  className="min-h-[72px] rounded-md border border-ia-outline-variant bg-ia-surface text-xs text-ia-on-surface placeholder:text-ia-secondary/40 focus-visible:ring-1 focus-visible:ring-ia-primary-container focus-visible:border-ia-primary-container w-full resize-none p-2.5 transition-colors"
+                />
+              </div>
+
+              <Button
+                id="post-payment-btn"
+                type="button"
+                onClick={() => void handleCreatePayment()}
+                disabled={isSubmitting || !paymentAmount}
+                className="h-9 w-full rounded-md bg-ia-primary-container text-ia-on-primary font-semibold text-xs transition-all hover:bg-ia-primary active:scale-[0.97] shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Post payment record
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ── Ledger History Table ── */}
@@ -447,15 +468,15 @@ export const CustomerLedgerPanel = ({
         </CardHeader>
 
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto max-h-[450px] overflow-y-auto relative">
             <Table>
-              <TableHeader className="bg-ia-surface-high border-b border-ia-outline-variant">
-                <TableRow className="hover:bg-transparent border-b border-ia-outline-variant">
-                  <TableHead className="ia-label py-2 px-4 h-9">Date</TableHead>
-                  <TableHead className="ia-label py-2 px-4 h-9">Type</TableHead>
-                  <TableHead className="ia-label py-2 px-4 h-9">Details</TableHead>
-                  <TableHead className="ia-label py-2 px-4 h-9">Balance</TableHead>
-                  <TableHead className="ia-label py-2 px-4 h-9 text-right">–</TableHead>
+              <TableHeader className="bg-ia-surface-high border-b border-ia-outline-variant sticky top-0 z-10">
+                <TableRow className="hover:bg-transparent border-b border-ia-outline-variant bg-ia-surface-high">
+                  <TableHead className="ia-label py-2 px-4 h-9 bg-ia-surface-high">Date</TableHead>
+                  <TableHead className="ia-label py-2 px-4 h-9 bg-ia-surface-high">Type</TableHead>
+                  <TableHead className="ia-label py-2 px-4 h-9 bg-ia-surface-high">Details</TableHead>
+                  <TableHead className="ia-label py-2 px-4 h-9 bg-ia-surface-high">Balance</TableHead>
+                  <TableHead className="ia-label py-2 px-4 h-9 text-right bg-ia-surface-high">–</TableHead>
                 </TableRow>
               </TableHeader>
 
@@ -475,7 +496,7 @@ export const CustomerLedgerPanel = ({
                       <TableRow
                         key={entry.id}
                         className={`border-b border-ia-outline-variant transition-colors ia-slide-up ia-stagger-${Math.min(idx + 1, 6)} ${
-                          isLast ? "bg-ia-surface-low/40" : "hover:bg-ia-surface-low/40"
+                          isLast ? "bg-ia-surface-low/40 font-bold" : "hover:bg-ia-surface-low/40"
                         }`}
                       >
                         <TableCell className="py-3.5 px-4 font-mono text-xs text-ia-secondary whitespace-nowrap tabular-nums">
@@ -567,7 +588,7 @@ export const CustomerLedgerPanel = ({
                 <p className="text-[11px] text-ia-secondary font-mono">
                   {ledger.length} entr{ledger.length !== 1 ? "ies" : "y"} on record
                 </p>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 flex-wrap">
                   <div className="text-[11px] font-mono">
                     <span className="text-ia-secondary">Debits: </span>
                     <span className="font-semibold text-ia-on-surface tabular-nums">
