@@ -159,12 +159,12 @@ export const AdminConsole = () => {
     return (
       <div className="min-h-dvh bg-ia-surface text-ia-on-surface">
         <AppTopBar isAuthenticated={false} />
-        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 space-y-6">
+        <main id="main-content" className="mx-auto max-w-7xl px-4 py-8 sm:px-6 space-y-6">
           <div className="h-12 flex flex-col gap-2">
             <div className="ia-skeleton h-5 w-48 rounded" />
             <div className="ia-skeleton h-3 w-72 rounded" />
           </div>
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-3">
             <StatCardSkeleton index={0} />
             <StatCardSkeleton index={1} />
             <StatCardSkeleton index={2} />
@@ -190,25 +190,25 @@ export const AdminConsole = () => {
     <div className="min-h-dvh bg-ia-surface text-ia-on-surface">
       <AppTopBar isAuthenticated={true} onLogout={handleLogout} />
 
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 space-y-6">
+      <main id="main-content" className="mx-auto max-w-7xl px-4 py-8 sm:px-6 space-y-6">
 
         {/* ── Page header ── */}
-        <header className="ia-fade-in">
+        <header className="ia-fade-in space-y-1">
           <div className="flex items-center gap-2.5">
-            <h1 className="text-xl font-semibold tracking-[-0.5px] text-ia-on-surface">
+            <h1 className="text-2xl font-bold tracking-tight text-ia-on-surface">
               Workspace Operations
             </h1>
             <Badge className="rounded-[4px] ia-chip-orange text-[10px] px-2 py-0.5 font-bold uppercase font-mono tracking-wider border-0">
               Admin
             </Badge>
           </div>
-          <p className="text-sm text-ia-secondary mt-1 leading-relaxed">
+          <p className="text-sm text-ia-secondary leading-relaxed">
             Manage product catalog, customer accounts, and credit ledgers.
           </p>
         </header>
 
         {/* ── KPI stat cards ── */}
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-3">
           {!statsData.statsLoaded ? (
             <>
               <StatCardSkeleton index={0} />
@@ -250,7 +250,7 @@ export const AdminConsole = () => {
         {/* ── Tabs ── */}
         <Tabs defaultValue="products" className="space-y-0">
           <TabsList
-            className="flex gap-0 bg-transparent p-0 border-b border-ia-outline-variant rounded-none h-auto w-full justify-start"
+            className="flex gap-1.5 bg-ia-surface-low border border-ia-outline-variant/60 p-1 rounded-xl h-auto w-max justify-start"
             id="admin-tab-list"
           >
             <TabsTrigger

@@ -175,7 +175,7 @@ export const AdminLogin = ({ onAuthenticated }: AdminLoginProps) => {
       <div
         className="hidden lg:flex lg:w-[460px] xl:w-[520px] shrink-0 flex-col justify-between p-10 xl:p-12 relative overflow-hidden"
         style={{
-          background: "linear-gradient(150deg, #1c0800 0%, #2d1000 50%, #3d1800 100%)",
+          background: "linear-gradient(160deg, #180700 0%, #290e00 60%, #3a1500 100%)",
         }}
       >
         {/* Geometric grid texture */}
@@ -184,8 +184,14 @@ export const AdminLogin = ({ onAuthenticated }: AdminLoginProps) => {
         {/* Diagonal decorative accent */}
         <div
           aria-hidden="true"
-          className="absolute -bottom-24 -right-24 w-64 h-64 rounded-full opacity-[0.06]"
+          className="absolute -bottom-16 -right-16 w-80 h-80 rounded-full opacity-[0.09]"
           style={{ background: "radial-gradient(circle, #FF5722 0%, transparent 70%)" }}
+        />
+        
+        <div
+          aria-hidden="true"
+          className="absolute -top-16 -left-16 w-80 h-80 rounded-full opacity-[0.05]"
+          style={{ background: "radial-gradient(circle, #ff9e80 0%, transparent 70%)" }}
         />
 
         {/* Top: Brand mark + store status */}
@@ -195,30 +201,30 @@ export const AdminLogin = ({ onAuthenticated }: AdminLoginProps) => {
               <rect width="28" height="28" rx="6" fill="#FF5722" />
               <path d="M7 8L11.5 20L14 14.5L16.5 20L21 8" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <span className="text-sm font-semibold text-white/90 tracking-[-0.28px]">Vendara</span>
+            <span className="text-sm font-bold text-white/90 tracking-tight">Vendara</span>
           </div>
-          <div className="flex items-center gap-1.5 text-[10px] font-mono font-semibold text-emerald-400/80">
-            <Circle className="size-2 fill-emerald-400/80 text-emerald-400/80" aria-hidden="true" />
+          <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-400/90 bg-emerald-950/30 px-2 py-0.5 rounded border border-emerald-500/20">
+            <Circle className="size-1.5 fill-emerald-400/90 text-emerald-400/90 animate-pulse" aria-hidden="true" />
             Store active
           </div>
         </div>
 
         {/* Center: headline + features */}
-        <div className="relative z-10 space-y-8">
+        <div className="relative z-10 space-y-8 my-auto">
           <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/6 px-2.5 py-1 text-[10px] font-mono font-bold uppercase tracking-widest text-orange-300/80">
+            <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/20 bg-orange-500/10 px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-wider text-orange-300">
               <Lock className="size-3" aria-hidden="true" />
               Secure Admin Portal
             </div>
-            <h1 className="text-[1.875rem] font-semibold leading-tight tracking-[-0.7px] text-white">
+            <h1 className="text-[2.25rem] font-bold leading-[1.15] tracking-tight text-white font-heading">
               Manage your store<br />with precision.
             </h1>
-            <p className="text-sm leading-relaxed text-white/45">
-              Inventory pricing, customer credit ledgers, and transaction logs — all in one workspace.
+            <p className="text-sm leading-relaxed text-white/50">
+              Inventory pricing, customer credit ledgers, and transaction logs — all in one unified dashboard.
             </p>
           </div>
 
-          <div className="space-y-3.5">
+          <div className="space-y-4 pt-2 border-t border-white/10">
             <FeatureItem icon={Package} text="Product catalog with price history" />
             <FeatureItem icon={Users} text="Customer credit accounts and ledgers" />
             <FeatureItem icon={TrendingUp} text="Markup margins calculated automatically" />
@@ -226,42 +232,42 @@ export const AdminLogin = ({ onAuthenticated }: AdminLoginProps) => {
         </div>
 
         {/* Footer */}
-        <div className="relative z-10 text-[11px] text-white/25 font-mono">
-          © {new Date().getFullYear()} Vendara · Powered by Vendara v2
+        <div className="relative z-10 text-[10px] text-white/30 font-mono tracking-wider">
+          © {new Date().getFullYear()} VENDARA · POWERED BY VENDARA v2
         </div>
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex flex-1 flex-col items-center justify-center bg-ia-surface px-4 py-10 sm:px-10">
-        <div className="w-full max-w-md space-y-7">
+      <div className="flex flex-1 flex-col items-center justify-center bg-ia-surface px-4 py-12 sm:px-10">
+        <div className="w-full max-w-md space-y-6">
 
           {/* Mobile brand */}
-          <div className="flex items-center gap-2 lg:hidden">
-            <svg width="24" height="24" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <div className="flex items-center gap-2 lg:hidden justify-center mb-4">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <rect width="28" height="28" rx="6" fill="#FF5722" />
               <path d="M7 8L11.5 20L14 14.5L16.5 20L21 8" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <span className="text-sm font-semibold text-ia-on-surface tracking-[-0.28px]">Vendara</span>
+            <span className="text-base font-bold text-ia-on-surface tracking-tight">Vendara</span>
           </div>
 
-          {/* Feedback banners — always at top */}
+          {/* Feedback banners */}
           {message && (
-            <div className="flex items-start gap-2.5 rounded-md bg-orange-50 border border-orange-200/60 p-3.5 text-xs text-orange-800 font-medium leading-relaxed ia-slide-up" role="alert">
-              <ShieldCheck className="size-4 shrink-0 mt-0.5 text-orange-500" aria-hidden="true" />
+            <div className="flex items-start gap-2.5 rounded-lg bg-orange-50 border border-orange-200 p-3.5 text-xs text-orange-850 font-semibold leading-relaxed ia-slide-up shadow-sm" role="alert">
+              <ShieldCheck className="size-4 shrink-0 mt-0.5 text-orange-600" aria-hidden="true" />
               <span>{message}</span>
             </div>
           )}
 
           {error && (
-            <div className="flex items-start gap-2.5 rounded-md bg-red-50 border border-red-200/60 p-3.5 text-xs text-ia-error font-medium leading-relaxed ia-slide-up" role="alert">
+            <div className="flex items-start gap-2.5 rounded-lg bg-red-50 border border-red-200 p-3.5 text-xs text-ia-error font-semibold leading-relaxed ia-slide-up shadow-sm" role="alert">
               <AlertCircle className="size-4 shrink-0 mt-0.5 text-ia-error" aria-hidden="true" />
               <span>{error}</span>
             </div>
           )}
 
           {/* Header */}
-          <div className="space-y-1.5">
-            <h2 className="text-[1.625rem] font-semibold tracking-[-0.5px] text-ia-on-surface">
+          <div className="space-y-1 text-center sm:text-left">
+            <h2 className="text-2xl font-bold tracking-tight text-ia-on-surface">
               Sign in to console
             </h2>
             <p className="text-sm text-ia-secondary leading-relaxed">
@@ -269,101 +275,105 @@ export const AdminLogin = ({ onAuthenticated }: AdminLoginProps) => {
             </p>
           </div>
 
-          {/* Sign-in form */}
-          <form onSubmit={handleSubmit} className="space-y-4" id="admin-login-form">
-            <div className="space-y-1.5">
-              <Label htmlFor="login-email" className="text-xs font-semibold text-ia-secondary">
-                Admin email
-              </Label>
-              <div className="relative flex items-center">
-                <Mail className="absolute left-3 size-4 text-ia-outline" aria-hidden="true" />
-                <Input
-                  id="login-email"
-                  type="email"
-                  placeholder="admin@vendara.com"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  className="h-11 pl-9 rounded-md border border-ia-outline-variant bg-ia-surface-card text-sm text-ia-on-surface placeholder:text-ia-secondary/40 focus-visible:ring-1 focus-visible:ring-ia-primary-container focus-visible:border-ia-primary-container w-full transition-colors"
-                  autoComplete="email"
-                  required
-                />
-              </div>
-            </div>
+          {/* Sign-in Double Bezel Wrapper */}
+          <div className="ia-bezel-outer">
+            <div className="ia-bezel-inner p-5 space-y-4 bg-white">
+              <form onSubmit={handleSubmit} className="space-y-4" id="admin-login-form">
+                <div className="space-y-1.5">
+                  <Label htmlFor="login-email" className="text-xs font-semibold text-ia-secondary">
+                    Admin email
+                  </Label>
+                  <div className="relative flex items-center">
+                    <Mail className="absolute left-3.5 size-4 text-ia-secondary/50" aria-hidden="true" />
+                    <Input
+                      id="login-email"
+                      type="email"
+                      placeholder="admin@vendara.com"
+                      value={email}
+                      onChange={(event) => setEmail(event.target.value)}
+                      className="h-10 pl-10 rounded-lg border border-ia-outline-variant bg-ia-surface-card text-sm text-ia-on-surface placeholder:text-ia-secondary/40 focus-visible:ring-2 focus-visible:ring-ia-primary-container/20 focus-visible:border-ia-primary-container w-full transition-all ia-focus-ring"
+                      autoComplete="email"
+                      required
+                    />
+                  </div>
+                </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="login-password" className="text-xs font-semibold text-ia-secondary">
-                Password
-              </Label>
-              <div className="relative flex items-center">
-                <Lock className="absolute left-3 size-4 text-ia-outline" aria-hidden="true" />
-                <Input
-                  id="login-password"
-                  type="password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  className="h-11 pl-9 rounded-md border border-ia-outline-variant bg-ia-surface-card text-sm text-ia-on-surface placeholder:text-ia-secondary/40 focus-visible:ring-1 focus-visible:ring-ia-primary-container focus-visible:border-ia-primary-container w-full transition-colors"
-                  autoComplete="current-password"
-                  required
-                />
-              </div>
-            </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="login-password" className="text-xs font-semibold text-ia-secondary">
+                    Password
+                  </Label>
+                  <div className="relative flex items-center">
+                    <Lock className="absolute left-3.5 size-4 text-ia-secondary/50" aria-hidden="true" />
+                    <Input
+                      id="login-password"
+                      type="password"
+                      placeholder="Enter your password"
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
+                      className="h-10 pl-10 rounded-lg border border-ia-outline-variant bg-ia-surface-card text-sm text-ia-on-surface placeholder:text-ia-secondary/40 focus-visible:ring-2 focus-visible:ring-ia-primary-container/20 focus-visible:border-ia-primary-container w-full transition-all ia-focus-ring"
+                      autoComplete="current-password"
+                      required
+                    />
+                  </div>
+                </div>
 
-            <Button
-              id="login-submit-btn"
-              type="submit"
-              className="h-11 w-full rounded-md bg-ia-primary-container text-ia-on-primary font-semibold text-sm transition-all hover:bg-ia-primary active:scale-[0.98] mt-2 cursor-pointer"
-              style={{ boxShadow: "var(--shadow-card)" }}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Signing in..." : "Sign in to console"}
-            </Button>
-          </form>
+                <Button
+                  id="login-submit-btn"
+                  type="submit"
+                  className="h-10 w-full rounded-lg bg-gradient-to-r from-ia-primary-container to-[#b02f00] text-ia-on-primary font-bold text-xs shadow-sm hover:shadow-md hover:brightness-105 active:scale-95 transition-all duration-200 mt-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ia-primary-container/30"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Signing in..." : "Sign in to console"}
+                </Button>
+              </form>
+            </div>
+          </div>
 
           {/* Divider */}
-          <div className="relative flex items-center gap-3">
+          <div className="relative flex items-center gap-3 py-1">
             <div className="flex-1 h-px bg-ia-outline-variant" />
-            <span className="text-[11px] text-ia-secondary/60 font-medium">Account verification</span>
+            <span className="text-[10px] text-ia-secondary/70 font-semibold uppercase tracking-wider font-sans">Account verification</span>
             <div className="flex-1 h-px bg-ia-outline-variant" />
           </div>
 
           {/* Verification section */}
-          <div className="rounded-md border border-ia-outline-variant bg-ia-surface-card p-4 space-y-3">
-            <div className="flex gap-2.5">
-              <ShieldAlert className="size-4.5 text-ia-secondary shrink-0 mt-0.5" aria-hidden="true" />
-              <div className="space-y-0.5">
-                <p className="text-xs font-semibold text-ia-on-surface">Need to verify your email?</p>
-                <p className="text-[11px] leading-relaxed text-ia-secondary">
-                  Neon Auth requires a verified email before granting admin write access.
-                </p>
+          <div className="ia-bezel-outer">
+            <div className="ia-bezel-inner p-4 space-y-3 bg-white">
+              <div className="flex gap-3">
+                <ShieldAlert className="size-4.5 text-ia-primary shrink-0 mt-0.5" aria-hidden="true" />
+                <div className="space-y-0.5">
+                  <p className="text-xs font-bold text-ia-on-surface">Need to verify your email?</p>
+                  <p className="text-[11px] leading-relaxed text-ia-secondary">
+                    Neon Auth requires a verified email before granting admin write access.
+                  </p>
+                </div>
               </div>
-            </div>
 
-            <Button
-              id="send-verification-btn"
-              type="button"
-              variant="outline"
-              className="w-full h-9 text-xs font-medium border border-ia-outline-variant bg-ia-surface hover:bg-ia-surface-high hover:text-ia-on-surface rounded-md transition-colors cursor-pointer"
-              disabled={isSubmitting}
-              onClick={() => void handleSendVerification()}
-            >
-              Request verification code
-            </Button>
+              <Button
+                id="send-verification-btn"
+                type="button"
+                className="w-full h-8.5 text-xs font-bold border border-ia-outline-variant bg-ia-surface-low hover:bg-ia-surface-high hover:text-ia-on-surface rounded-lg transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ia-primary-container/20"
+                disabled={isSubmitting}
+                onClick={() => void handleSendVerification()}
+              >
+                Request verification code
+              </Button>
+            </div>
           </div>
 
-          {/* OTP input panel — always reserved space to avoid layout shift */}
+          {/* OTP input panel */}
           <div
-            className={`rounded-md border border-ia-outline-variant bg-ia-surface-card overflow-hidden transition-all duration-300 ${
-              isVerificationMode ? "max-h-96 opacity-100" : "max-h-0 opacity-0 border-transparent"
+            className={`rounded-xl border border-ia-outline-variant bg-ia-surface-card overflow-hidden transition-all duration-300 ${
+              isVerificationMode ? "max-h-96 opacity-100 mt-4 shadow-sm" : "max-h-0 opacity-0 border-transparent pointer-events-none"
             }`}
             aria-hidden={!isVerificationMode}
           >
-            <div className="p-4 space-y-4">
+            <div className="p-5 space-y-4">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="size-4 text-ia-primary-container shrink-0" aria-hidden="true" />
-                <span className="text-xs font-semibold text-ia-on-surface">Enter OTP code</span>
+                <CheckCircle2 className="size-4.5 text-emerald-600 shrink-0" aria-hidden="true" />
+                <span className="text-xs font-bold text-ia-on-surface">Enter OTP code</span>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="otp-code" className="text-xs font-semibold text-ia-secondary">
                   Verification code
                 </Label>
@@ -374,14 +384,14 @@ export const AdminLogin = ({ onAuthenticated }: AdminLoginProps) => {
                   placeholder="· · · · · ·"
                   value={verificationCode}
                   onChange={(event) => setVerificationCode(event.target.value)}
-                  className="h-14 text-center font-mono tracking-[0.5em] text-xl font-bold rounded-md border border-ia-outline-variant bg-ia-surface focus-visible:ring-1 focus-visible:ring-ia-primary-container focus-visible:border-ia-primary-container transition-colors"
+                  className="h-12 text-center font-mono tracking-[0.5em] text-lg font-bold rounded-lg border border-ia-outline-variant bg-ia-surface focus-visible:ring-2 focus-visible:ring-ia-primary-container/20 focus-visible:border-ia-primary-container transition-all ia-focus-ring"
                   autoComplete="one-time-code"
                 />
               </div>
               <Button
                 id="verify-otp-btn"
                 type="button"
-                className="h-10 w-full rounded-md bg-ia-primary-container text-ia-on-primary font-semibold text-sm transition-all hover:bg-ia-primary active:scale-[0.98] cursor-pointer"
+                className="h-10 w-full rounded-lg bg-gradient-to-r from-ia-primary-container to-[#b02f00] text-ia-on-primary font-bold text-xs hover:shadow-md hover:brightness-105 active:scale-95 transition-all duration-200 cursor-pointer"
                 disabled={isSubmitting}
                 onClick={() => void handleVerifyEmail()}
               >
@@ -391,10 +401,10 @@ export const AdminLogin = ({ onAuthenticated }: AdminLoginProps) => {
           </div>
 
           {/* Back link */}
-          <div className="flex items-center justify-center pt-1">
+          <div className="flex items-center justify-center pt-2">
             <a
               href="/"
-              className="inline-flex items-center gap-1.5 text-xs text-ia-secondary font-medium transition-colors hover:text-ia-primary"
+              className="inline-flex items-center gap-1.5 text-xs text-ia-secondary font-semibold transition-colors hover:text-ia-primary active:scale-95"
             >
               <ArrowLeft className="size-3" aria-hidden="true" />
               <span>Back to public price lookup</span>
