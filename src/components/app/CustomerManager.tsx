@@ -147,7 +147,7 @@ export const CustomerManager = ({ onStatsChange }: CustomerManagerProps) => {
               value={customerSearch}
               onChange={(e) => setCustomerSearch(e.target.value)}
               placeholder="Search customers..."
-              className="h-9 pl-8 pr-8 rounded-md border border-ia-outline-variant bg-ia-surface-card text-sm placeholder:text-ia-secondary/40 focus-visible:ring-1 focus-visible:ring-ia-primary-container focus-visible:border-ia-primary-container transition-colors"
+              className="h-9 pl-8 pr-8 rounded-lg border border-ia-outline-variant bg-ia-surface-card text-sm placeholder:text-ia-secondary/55 focus-visible:ring-2 focus-visible:ring-ia-primary-container/20 focus-visible:border-ia-primary-container transition-all ia-focus-ring"
               aria-label="Search customers"
             />
             {customerSearch && (
@@ -169,8 +169,7 @@ export const CustomerManager = ({ onStatsChange }: CustomerManagerProps) => {
               setForm(emptyCustomerForm);
               setShowAddForm((prev) => !prev);
             }}
-            className="h-9 px-4 rounded-md bg-ia-primary-container text-ia-on-primary font-semibold text-xs transition-all hover:bg-ia-primary active:scale-[0.97] cursor-pointer"
-            style={{ boxShadow: "var(--shadow-card)" }}
+            className="h-9 px-4 rounded-lg bg-gradient-to-r from-ia-primary-container to-[#b02f00] text-ia-on-primary font-bold text-xs shadow-sm hover:shadow-md hover:brightness-105 active:scale-95 transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ia-primary-container/30"
           >
             <Plus className="size-3.5 mr-1.5" aria-hidden="true" />
             {showAddForm && !form.id ? "Cancel" : "Add customer"}
@@ -178,239 +177,247 @@ export const CustomerManager = ({ onStatsChange }: CustomerManagerProps) => {
         </div>
       </div>
 
-      {/* ── Add / Edit form (above split-pane) ── */}
+      {/* ── Add / Edit form ── */}
       {(showAddForm || form.id) && (
-        <div className="rounded-lg border border-ia-outline-variant bg-ia-surface-card ia-slide-up" style={{ boxShadow: "var(--shadow-card)" }}>
-          <div className="ia-well flex items-center justify-between">
-            <div>
-              <p className="text-sm font-semibold text-ia-on-surface flex items-center gap-2">
-                <span className="flex h-5 w-5 items-center justify-center rounded-md bg-ia-primary-container text-ia-on-primary font-mono text-[11px] font-bold">
-                  {form.id ? "E" : "+"}
-                </span>
-                {form.id ? "Edit customer record" : "Register new customer"}
-              </p>
-              <p className="text-xs text-ia-secondary mt-0.5">
-                Register clients to track store credits and outstanding balances.
-              </p>
+        <div className="ia-bezel-outer ia-slide-up">
+          <div className="ia-bezel-inner bg-white overflow-hidden">
+            <div className="ia-well border-b border-ia-outline-variant px-5 py-3.5 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-bold text-ia-on-surface flex items-center gap-2">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-md bg-ia-primary-container text-ia-on-primary font-mono text-[10px] font-bold">
+                    {form.id ? "E" : "+"}
+                  </span>
+                  {form.id ? "Edit customer record" : "Register new customer"}
+                </p>
+                <p className="text-[11px] text-ia-secondary mt-1 leading-normal">
+                  Register clients to track store credits and outstanding balances.
+                </p>
+              </div>
             </div>
-          </div>
 
-          <div className="p-5">
-            <form onSubmit={handleSubmit} className="grid sm:grid-cols-[1fr_1fr_auto] gap-4 items-end" id="customer-form">
-              <div className="space-y-1.5">
-                <Label htmlFor="customer-name" className="text-xs font-semibold text-ia-secondary">
-                  Customer name
-                </Label>
-                <Input
-                  id="customer-name"
-                  placeholder="e.g. Aling Nena"
-                  value={form.name}
-                  onChange={(event) =>
-                    setForm((current) => ({ ...current, name: event.target.value }))
-                  }
-                  className="h-10 rounded-md border border-ia-outline-variant bg-ia-surface text-sm text-ia-on-surface placeholder:text-ia-secondary/40 focus-visible:ring-1 focus-visible:ring-ia-primary-container focus-visible:border-ia-primary-container w-full transition-colors"
-                  required
-                />
-              </div>
+            <div className="p-5">
+              <form onSubmit={handleSubmit} className="grid sm:grid-cols-[1fr_1fr_auto] gap-4 items-end" id="customer-form">
+                <div className="space-y-1.5">
+                  <Label htmlFor="customer-name" className="text-xs font-semibold text-ia-secondary">
+                    Customer name
+                  </Label>
+                  <Input
+                    id="customer-name"
+                    placeholder="e.g. Aling Nena"
+                    value={form.name}
+                    onChange={(event) =>
+                      setForm((current) => ({ ...current, name: event.target.value }))
+                    }
+                    className="h-10 rounded-lg border border-ia-outline-variant bg-ia-surface text-sm text-ia-on-surface placeholder:text-ia-secondary/40 focus-visible:ring-2 focus-visible:ring-ia-primary-container/20 focus-visible:border-ia-primary-container w-full transition-all ia-focus-ring"
+                    required
+                  />
+                </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="customer-note" className="text-xs font-semibold text-ia-secondary">
-                  Note <span className="font-normal text-ia-secondary/60">(optional)</span>
-                </Label>
-                <Textarea
-                  id="customer-note"
-                  placeholder="Contact details, address..."
-                  value={form.note}
-                  onChange={(event) =>
-                    setForm((current) => ({ ...current, note: event.target.value }))
-                  }
-                  className="h-10 min-h-0 rounded-md border border-ia-outline-variant bg-ia-surface text-sm text-ia-on-surface placeholder:text-ia-secondary/40 focus-visible:ring-1 focus-visible:ring-ia-primary-container focus-visible:border-ia-primary-container w-full resize-none p-3 transition-colors"
-                />
-              </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="customer-note" className="text-xs font-semibold text-ia-secondary">
+                    Note <span className="font-normal text-ia-secondary/60">(optional)</span>
+                  </Label>
+                  <Textarea
+                    id="customer-note"
+                    placeholder="Contact details, address..."
+                    value={form.note}
+                    onChange={(event) =>
+                      setForm((current) => ({ ...current, note: event.target.value }))
+                    }
+                    className="h-10 min-h-0 rounded-lg border border-ia-outline-variant bg-ia-surface text-sm text-ia-on-surface placeholder:text-ia-secondary/40 focus-visible:ring-2 focus-visible:ring-ia-primary-container/20 focus-visible:border-ia-primary-container w-full resize-none p-2.5 transition-all ia-focus-ring"
+                  />
+                </div>
 
-              <div className="flex gap-2">
-                <Button
-                  id="customer-submit-btn"
-                  type="submit"
-                  disabled={isSaving}
-                  className="h-10 px-4 rounded-md bg-ia-primary-container text-ia-on-primary font-semibold text-xs transition-all hover:bg-ia-primary active:scale-[0.97] cursor-pointer"
-                  style={{ boxShadow: "var(--shadow-card)" }}
-                >
-                  {isSaving ? "Saving..." : form.id ? "Update" : "Register"}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => { setForm(emptyCustomerForm); setShowAddForm(false); }}
-                  className="h-10 px-3 rounded-md border border-ia-outline-variant bg-ia-surface-card hover:bg-ia-surface text-ia-secondary text-xs font-semibold transition-colors cursor-pointer"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </form>
+                <div className="flex gap-2">
+                  <Button
+                    id="customer-submit-btn"
+                    type="submit"
+                    disabled={isSaving}
+                    className="h-10 px-4 rounded-lg bg-gradient-to-r from-ia-primary-container to-[#b02f00] text-ia-on-primary font-bold text-xs shadow-sm hover:shadow-md hover:brightness-105 active:scale-95 transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ia-primary-container/30"
+                  >
+                    {isSaving ? "Saving..." : form.id ? "Update" : "Register"}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => { setForm(emptyCustomerForm); setShowAddForm(false); }}
+                    className="h-10 px-3 rounded-lg border border-ia-outline-variant bg-ia-surface-low hover:bg-ia-surface-high text-ia-secondary text-xs font-bold transition-all active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ia-primary-container/20"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}
 
-      {/* ── Split-pane: list | detail ── */}
-      <div className="ia-split-pane">
+      {/* ── Asymmetric Bento Layout Grid ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6 items-start w-full">
 
         {/* ── Left panel: customer list ── */}
         <div
-          className={`ia-split-pane__list ${mobileView === "detail" ? "hidden lg:flex lg:flex-col" : "flex flex-col w-full lg:w-[280px]"}`}
+          className={`ia-bezel-outer ${mobileView === "detail" ? "hidden lg:block" : "block w-full"}`}
         >
-          {/* List header */}
-          <div className="ia-well flex items-center justify-between gap-2">
-            <div>
-              <p className="ia-label">Accounts</p>
-              <p className="text-xs font-semibold text-ia-on-surface mt-0.5">
-                {customers.length} customer{customers.length !== 1 ? "s" : ""}
-              </p>
-            </div>
-            {customers.some((c) => (c.balance ?? 0) > 0) && (
-              <span className="ia-pulse-dot" aria-label="Outstanding balances" />
-            )}
-          </div>
-
-          {/* Customer list */}
-          <div className="flex-1 overflow-y-auto">
-            {customers.length === 0 ? (
-              <div className="flex flex-col items-center justify-center gap-3 py-12 px-4 text-center ia-fade-in">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-ia-surface border border-ia-outline-variant text-ia-secondary">
-                  <Users className="size-5" aria-hidden="true" />
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-ia-on-surface">No accounts yet</p>
-                  <p className="text-[11px] text-ia-secondary mt-0.5">
-                    Add a customer to get started.
-                  </p>
-                </div>
-              </div>
-            ) : filteredCustomers.length === 0 ? (
-              <div className="px-4 py-8 text-center text-xs text-ia-secondary">
-                No customers match "<span className="font-semibold text-ia-on-surface">{customerSearch}</span>"
-              </div>
-            ) : (
-              filteredCustomers.map((customer) => {
-                const hasCredit = customer.balance > 0;
-                const isActive = selectedCustomerId === customer.id;
-                const avatarColor = getAvatarColor(customer.name);
-                const initials = getInitials(customer.name);
-
-                return (
-                  <div
-                    key={customer.id}
-                    id={`customer-item-${customer.id}`}
-                    className="ia-customer-item group"
-                    data-active={isActive ? "true" : "false"}
-                    onClick={() => selectCustomer(customer.id)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => e.key === "Enter" && selectCustomer(customer.id)}
-                    aria-pressed={isActive}
-                    aria-label={`${customer.name}, ${hasCredit ? `₱${customer.balance.toFixed(2)} outstanding` : "settled"}`}
-                  >
-                    {/* Avatar + name */}
-                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                      <div
-                        className="ia-avatar rounded-md text-[11px] shrink-0"
-                        style={{ background: avatarColor.bg, color: avatarColor.text }}
-                        aria-hidden="true"
-                      >
-                        {initials}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="ia-customer-item__name text-sm text-ia-on-surface font-medium leading-snug truncate">
-                          {customer.name}
-                        </p>
-                        {customer.note && (
-                          <p className="text-[11px] text-ia-secondary truncate mt-0.5 leading-relaxed">
-                            {customer.note}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Balance + actions */}
-                    <div className="flex items-center gap-1.5 shrink-0 ml-2">
-                      {hasCredit ? (
-                        <div className="flex items-center gap-1">
-                          <span className="ia-pulse-dot" aria-hidden="true" />
-                          <Badge className="rounded-[4px] ia-chip-red text-[10px] font-semibold font-mono px-1.5 py-0.5 tabular-nums">
-                            ₱{customer.balance.toFixed(2)}
-                          </Badge>
-                        </div>
-                      ) : (
-                        <CheckCircle2 className="size-3.5 text-emerald-500" aria-label="Settled" />
-                      )}
-
-                      {/* Inline actions on hover */}
-                      <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150" onClick={(e) => e.stopPropagation()}>
-                        <button
-                          id={`edit-customer-${customer.id}`}
-                          onClick={() =>
-                            setForm({
-                              id: customer.id,
-                              name: customer.name,
-                              note: customer.note ?? "",
-                            })
-                          }
-                          className="flex h-6 w-6 items-center justify-center rounded-md border border-ia-outline-variant bg-ia-surface-card hover:bg-ia-surface text-ia-secondary transition-colors cursor-pointer"
-                          title="Edit profile"
-                          aria-label={`Edit ${customer.name}`}
-                        >
-                          <Edit2 className="size-3" aria-hidden="true" />
-                        </button>
-                        <button
-                          id={`delete-customer-${customer.id}`}
-                          onClick={() => void handleDelete(customer.id)}
-                          className="flex h-6 w-6 items-center justify-center rounded-md bg-ia-error-container/20 text-ia-error hover:bg-ia-error-container/50 transition-colors cursor-pointer"
-                          title="Delete account"
-                          aria-label={`Delete ${customer.name}`}
-                        >
-                          <Trash2 className="size-3" aria-hidden="true" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-
-          {/* List footer */}
-          {customers.length > 0 && (
-            <div className="px-4 py-2.5 border-t border-ia-outline-variant bg-ia-surface-high flex items-center justify-between">
-              <p className="text-[11px] text-ia-secondary font-mono">
-                {filteredCustomers.length} of {customers.length}
-              </p>
-              {customers.some((c) => c.balance > 0) && (
-                <p className="text-[11px] font-mono font-semibold text-ia-error tabular-nums">
-                  ₱{customers.reduce((s, c) => s + c.balance, 0).toFixed(2)} outstanding
+          <div className="ia-bezel-inner bg-white overflow-hidden max-h-[680px] flex flex-col">
+            {/* List header */}
+            <div className="ia-well flex items-center justify-between gap-2 border-b border-ia-outline-variant px-5 py-4">
+              <div>
+                <p className="ia-label text-[10px] text-ia-secondary font-bold uppercase tracking-wider font-sans">Accounts</p>
+                <p className="text-xs font-bold text-ia-on-surface mt-1">
+                  {customers.length} customer{customers.length !== 1 ? "s" : ""}
                 </p>
+              </div>
+              {customers.some((c) => (c.balance ?? 0) > 0) && (
+                <span className="ia-pulse-dot" aria-label="Outstanding balances" />
               )}
             </div>
-          )}
+
+            {/* Customer list */}
+            <div className="flex-1 overflow-y-auto divide-y divide-ia-outline-variant/50">
+              {customers.length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-3 py-16 px-4 text-center ia-fade-in">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-ia-surface border border-ia-outline-variant text-ia-secondary">
+                    <Users className="size-5" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-ia-on-surface">No accounts yet</p>
+                    <p className="text-[11px] text-ia-secondary mt-1">
+                      Add a customer to get started.
+                    </p>
+                  </div>
+                </div>
+              ) : filteredCustomers.length === 0 ? (
+                <div className="px-4 py-12 text-center text-xs text-ia-secondary">
+                  No customers match "<span className="font-semibold text-ia-on-surface">{customerSearch}</span>"
+                </div>
+              ) : (
+                filteredCustomers.map((customer) => {
+                  const hasCredit = customer.balance > 0;
+                  const isActive = selectedCustomerId === customer.id;
+                  const avatarColor = getAvatarColor(customer.name);
+                  const initials = getInitials(customer.name);
+
+                  return (
+                    <div
+                      key={customer.id}
+                      id={`customer-item-${customer.id}`}
+                      className={`flex items-center justify-between p-3.5 cursor-pointer relative transition-all duration-300 border-l-2 select-none group ${
+                        isActive
+                          ? "bg-ia-surface-overlay border-ia-primary-container"
+                          : "border-transparent hover:bg-ia-surface-low/50"
+                      }`}
+                      onClick={() => selectCustomer(customer.id)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => e.key === "Enter" && selectCustomer(customer.id)}
+                      aria-pressed={isActive}
+                      aria-label={`${customer.name}, ${hasCredit ? `₱${customer.balance.toFixed(2)} outstanding` : "settled"}`}
+                    >
+                      {/* Avatar + name */}
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div
+                          className="ia-avatar rounded-lg text-[10px] shrink-0 w-8 h-8 font-bold flex items-center justify-center transition-all duration-300 group-hover:scale-105"
+                          style={{ background: avatarColor.bg, color: avatarColor.text }}
+                          aria-hidden="true"
+                        >
+                          {initials}
+                        </div>
+                        <div className="min-w-0">
+                          <p className={`text-sm font-semibold truncate leading-snug transition-colors ${
+                            isActive ? "text-ia-on-surface" : "text-ia-on-surface/90"
+                          }`}>
+                            {customer.name}
+                          </p>
+                          {customer.note && (
+                            <p className="text-[11px] text-ia-secondary truncate mt-0.5 leading-relaxed">
+                              {customer.note}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Balance + actions */}
+                      <div className="flex items-center gap-2 shrink-0 ml-2">
+                        {hasCredit ? (
+                          <div className="flex items-center gap-1">
+                            <span className="ia-pulse-dot" aria-hidden="true" />
+                            <Badge className="rounded-md ia-chip-red text-[10px] font-bold font-mono px-1.5 py-0.5 tabular-nums">
+                              ₱{customer.balance.toFixed(2)}
+                            </Badge>
+                          </div>
+                        ) : (
+                          <CheckCircle2 className="size-4 text-emerald-500" aria-label="Settled" />
+                        )}
+
+                        {/* Inline actions on hover */}
+                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200" onClick={(e) => e.stopPropagation()}>
+                          <button
+                            id={`edit-customer-${customer.id}`}
+                            onClick={() =>
+                              setForm({
+                                id: customer.id,
+                                name: customer.name,
+                                note: customer.note ?? "",
+                              })
+                            }
+                            className="flex h-6.5 w-6.5 items-center justify-center rounded-lg border border-ia-outline-variant bg-white hover:bg-ia-surface-high text-ia-secondary hover:text-ia-on-surface transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ia-primary-container/20 active:scale-90"
+                            title="Edit profile"
+                            aria-label={`Edit ${customer.name}`}
+                          >
+                            <Edit2 className="size-3" aria-hidden="true" />
+                          </button>
+                          <button
+                            id={`delete-customer-${customer.id}`}
+                            onClick={() => void handleDelete(customer.id)}
+                            className="flex h-6.5 w-6.5 items-center justify-center rounded-lg bg-ia-error-container/25 text-ia-error hover:bg-ia-error-container/55 transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/20 active:scale-90"
+                            title="Delete account"
+                            aria-label={`Delete ${customer.name}`}
+                          >
+                            <Trash2 className="size-3" aria-hidden="true" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* List footer */}
+            {customers.length > 0 && (
+              <div className="px-5 py-3 border-t border-ia-outline-variant bg-ia-surface-high flex items-center justify-between">
+                <p className="text-[11px] text-ia-secondary font-mono">
+                  {filteredCustomers.length} of {customers.length}
+                </p>
+                {customers.some((c) => c.balance > 0) && (
+                  <p className="text-[11px] font-mono font-bold text-ia-error tabular-nums">
+                    ₱{customers.reduce((s, c) => s + c.balance, 0).toFixed(2)} total
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* ── Right panel: ledger detail ── */}
         <div
-          className={`ia-split-pane__detail ${mobileView === "list" ? "hidden lg:block" : "block w-full"}`}
+          className={`ia-bezel-outer ${mobileView === "list" ? "hidden lg:block" : "block w-full flex-1"}`}
         >
-          {/* Mobile back button */}
-          {mobileView === "detail" && (
-            <div className="lg:hidden border-b border-ia-outline-variant px-4 py-3 bg-ia-surface-high">
-              <button
-                onClick={() => { setMobileView("list"); setSelectedCustomerId(""); }}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-ia-secondary hover:text-ia-on-surface transition-colors cursor-pointer"
-              >
-                <ArrowLeft className="size-3.5" aria-hidden="true" />
-                Back to customers
-              </button>
-            </div>
-          )}
+          <div className="ia-bezel-inner bg-white p-5 min-h-[500px]">
+            {/* Mobile back button */}
+            {mobileView === "detail" && (
+              <div className="lg:hidden border-b border-ia-outline-variant pb-4 mb-4">
+                <button
+                  onClick={() => { setMobileView("list"); setSelectedCustomerId(""); }}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-ia-secondary hover:text-ia-on-surface transition-all cursor-pointer active:scale-95"
+                >
+                  <ArrowLeft className="size-3.5" aria-hidden="true" />
+                  Back to customers
+                </button>
+              </div>
+            )}
 
-          <div className="p-5">
             <CustomerLedgerPanel
               customer={selectedCustomer}
               products={products}

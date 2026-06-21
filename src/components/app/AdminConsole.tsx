@@ -31,30 +31,32 @@ const StatCard = ({
   index = 0,
 }: StatCardProps) => (
   <div
-    className={`ia-stat-card ia-slide-up ia-stagger-${index + 1} ${accent === "error" ? "ia-stat-card--error" : ""}`}
+    className={`ia-bezel-outer ia-slide-up ia-stagger-${index + 1} ia-spring-hover group`}
   >
-    <div className="flex items-start justify-between gap-3">
-      <div className="space-y-1.5 min-w-0">
-        <p className="ia-label">{label}</p>
-        <p
-          className={`text-[1.75rem] font-semibold tracking-[-0.6px] font-mono tabular-nums leading-none ${
-            accent === "error" ? "text-ia-error" : "text-ia-on-surface"
+    <div className={`ia-bezel-inner p-5 h-full ${accent === "error" ? "bg-red-50/10 border-red-200/50" : "bg-white"}`}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="space-y-1.5 min-w-0">
+          <p className="ia-label text-[10px] text-ia-secondary font-bold uppercase tracking-wider font-sans">{label}</p>
+          <p
+            className={`text-3xl font-bold tracking-tight font-mono tabular-nums leading-none ${
+              accent === "error" ? "text-ia-error" : "text-ia-on-surface"
+            }`}
+          >
+            {value}
+          </p>
+          {sub && (
+            <p className="text-[11px] text-ia-secondary/85 font-semibold leading-relaxed mt-1">{sub}</p>
+          )}
+        </div>
+        <div
+          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border transition-all duration-350 group-hover:scale-110 ${
+            accent === "error"
+              ? "bg-red-50 text-ia-error border-red-150"
+              : "bg-ia-surface text-ia-secondary border-ia-outline-variant"
           }`}
         >
-          {value}
-        </p>
-        {sub && (
-          <p className="text-[11px] text-ia-secondary leading-relaxed">{sub}</p>
-        )}
-      </div>
-      <div
-        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md ${
-          accent === "error"
-            ? "bg-red-50 text-ia-error border border-red-100"
-            : "bg-ia-surface text-ia-secondary border border-ia-outline-variant"
-        }`}
-      >
-        <Icon className="size-4.5" />
+          <Icon className="size-5" />
+        </div>
       </div>
     </div>
   </div>
@@ -62,24 +64,25 @@ const StatCard = ({
 
 // ── Skeleton stat card ───────────────────────────────────────────────────────
 const StatCardSkeleton = ({ index = 0 }: { index?: number }) => (
-  <div className={`ia-stat-card ia-fade-in ia-stagger-${index + 1}`}>
-    <div className="flex items-start justify-between gap-3">
-      <div className="space-y-2 flex-1">
-        <div className="ia-skeleton h-2.5 w-24 rounded" />
-        <div className="ia-skeleton h-8 w-20 rounded" />
-        <div className="ia-skeleton h-2 w-28 rounded" />
+  <div className={`ia-bezel-outer ia-fade-in ia-stagger-${index + 1}`}>
+    <div className="ia-bezel-inner p-5 bg-white space-y-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="space-y-3 flex-1">
+          <div className="ia-skeleton h-3 w-24 rounded" />
+          <div className="ia-skeleton h-7 w-20 rounded" />
+          <div className="ia-skeleton h-3 w-28 rounded" />
+        </div>
+        <div className="ia-skeleton h-11 w-11 rounded-lg" />
       </div>
-      <div className="ia-skeleton h-10 w-10 rounded-md" />
     </div>
   </div>
 );
 
 // ── Tab trigger class ────────────────────────────────────────────────────────
 const TAB_TRIGGER_CLASS =
-  "relative rounded-none px-5 py-3 text-[0.8125rem] font-semibold tracking-tight transition-all text-ia-secondary hover:text-ia-on-surface cursor-pointer bg-transparent border-0 shadow-none " +
-  "data-[state=active]:text-ia-on-surface data-[state=active]:bg-transparent " +
-  "after:absolute after:bottom-[-1px] after:left-0 after:right-0 after:h-[2px] after:rounded-none after:bg-ia-primary-container after:scale-x-0 " +
-  "data-[state=active]:after:scale-x-100 after:transition-transform after:duration-200 after:ease-out";
+  "relative rounded-lg px-6 py-2.5 text-xs font-bold tracking-normal transition-all duration-300 text-ia-secondary hover:text-ia-on-surface cursor-pointer shadow-none border-0 " +
+  "data-[state=active]:text-ia-on-primary data-[state=active]:bg-ia-primary-container data-[state=active]:shadow-sm " +
+  "active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ia-primary-container/20";
 
 // ── AdminConsole ─────────────────────────────────────────────────────────────
 export const AdminConsole = () => {

@@ -31,15 +31,15 @@ function deriveCategory(name: string): string {
 // ── Skeleton card ─────────────────────────────────────────────────────────────
 const ProductCardSkeleton = ({ delay = 0 }: { delay?: number }) => (
   <div
-    className="ia-product-card"
+    className="ia-bezel-outer p-1 bg-ia-surface-low"
     style={{ animationDelay: `${delay}ms` }}
   >
-    <div className="p-5 space-y-4">
-      <div className="ia-skeleton h-4 w-32 rounded" />
-      <div className="ia-skeleton h-2 w-16 rounded" />
+    <div className="ia-bezel-inner bg-white p-5 space-y-4">
+      <div className="ia-skeleton h-4 w-32 rounded-md" />
+      <div className="ia-skeleton h-2.5 w-16 rounded-md" />
       <div className="space-y-1">
-        <div className="ia-skeleton h-2 w-20 rounded" />
-        <div className="ia-skeleton h-8 w-24 rounded" />
+        <div className="ia-skeleton h-2 w-20 rounded-md" />
+        <div className="ia-skeleton h-8 w-28 rounded-md" />
       </div>
     </div>
   </div>
@@ -57,43 +57,43 @@ const ProductCard = ({
 
   return (
     <div
-      className="ia-product-card ia-slide-up"
+      className="ia-bezel-outer p-1 bg-ia-surface-low ia-slide-up group transition-all duration-300 hover:translate-y-[-2px] hover:border-ia-outline hover:shadow-md"
       style={{ animationDelay: `${Math.min(index * 40, 240)}ms` }}
     >
-      {/* Hover top accent bar */}
-      <div className="ia-product-card__accent" aria-hidden="true" />
+      <div className="ia-bezel-inner bg-white p-5 flex flex-col gap-4 h-full relative overflow-hidden">
+        {/* Accent hover line inside card */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-ia-primary-container to-[#b02f00] scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" aria-hidden="true" />
 
-      <div className="p-5 flex flex-col gap-3 h-full">
         {/* Header row: name + icon */}
         <div className="flex items-start justify-between gap-3">
-          <h3 className="font-semibold text-sm leading-snug text-ia-on-surface flex-1 tracking-[-0.2px]">
+          <h3 className="font-heading font-bold text-sm leading-snug text-ia-on-surface flex-1 tracking-tight">
             {product.name}
           </h3>
-          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-ia-surface border border-ia-outline-variant text-ia-secondary transition-all group-hover:text-ia-primary-container">
-            <Tag className="size-3.5" />
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-ia-surface border border-ia-outline-variant text-ia-secondary transition-all duration-300 group-hover:text-ia-primary-container group-hover:border-ia-primary-container/30 group-hover:bg-ia-primary-subtle">
+            <Tag className="size-3.5" aria-hidden="true" />
           </div>
         </div>
 
         {/* Category badge */}
         {category !== "Other" && (
-          <span className="inline-flex self-start items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-[0.06em] uppercase bg-ia-surface border border-ia-outline-variant text-ia-secondary font-mono">
+          <span className="inline-flex self-start items-center px-2 py-0.5 rounded-md text-[9px] font-bold tracking-wider uppercase bg-ia-surface border border-ia-outline-variant text-ia-secondary font-mono">
             {category}
           </span>
         )}
 
         {/* Price block */}
-        <div className="mt-auto pt-2 border-t border-ia-outline-variant">
-          <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-ia-secondary font-mono mb-1">
+        <div className="mt-auto pt-3 border-t border-ia-outline-variant/65">
+          <p className="text-[9px] font-bold uppercase tracking-widest text-ia-secondary font-mono mb-1.5">
             Selling Price
           </p>
-          <p className="text-[1.875rem] font-semibold tracking-tight text-ia-on-surface font-mono tabular-nums leading-none">
+          <p className="text-2xl font-bold tracking-tight text-ia-on-surface font-mono tabular-nums leading-none">
             ₱{product.sellingPrice.toFixed(2)}
           </p>
         </div>
 
         {/* Note */}
         {product.note ? (
-          <div className="rounded-md bg-ia-surface border border-ia-outline-variant px-3 py-2">
+          <div className="rounded-lg bg-ia-surface border border-ia-outline-variant/70 px-3 py-2">
             <p className="text-xs text-ia-secondary leading-relaxed italic line-clamp-2">
               "{product.note}"
             </p>
@@ -150,18 +150,24 @@ export const PublicCatalog = () => {
       {/* ── Hero Band ── */}
       <section className="relative mx-auto max-w-4xl px-4 pt-16 pb-12 text-center md:pt-24 md:pb-16">
 
-        {/* Radial orange background glow */}
+        {/* Radial orange background glow and industrial grid */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 h-64 opacity-60"
+          className="pointer-events-none absolute inset-0 opacity-40 select-none"
           style={{
-            background: "radial-gradient(ellipse 80% 70% at 50% -5%, rgba(255,87,34,0.07) 0%, transparent 70%)",
+            backgroundImage: `
+              radial-gradient(ellipse 70% 60% at 50% 10%, rgba(255, 87, 34, 0.08), transparent 70%),
+              radial-gradient(var(--ia-outline) 1px, transparent 1px)
+            `,
+            backgroundSize: '100% 100%, 16px 16px',
+            maskImage: 'radial-gradient(ellipse 60% 50% at 50% 30%, black, transparent 90%)',
+            WebkitMaskImage: 'radial-gradient(ellipse 60% 50% at 50% 30%, black, transparent 90%)',
           }}
         />
 
         {/* Badge */}
         <div className="mb-6 flex justify-center">
-          <span className="inline-flex items-center gap-1.5 rounded-md border border-ia-outline-variant bg-ia-surface-card px-3 py-1 text-[11px] font-bold text-ia-secondary font-mono tracking-widest uppercase">
+          <span className="inline-flex items-center gap-1.5 rounded-lg border border-ia-outline-variant bg-ia-surface-card px-3 py-1 text-[11px] font-bold text-ia-secondary font-mono tracking-widest uppercase">
             <Package className="size-3 text-ia-primary-container" aria-hidden="true" />
             Store Pricelist
           </span>
@@ -177,28 +183,24 @@ export const PublicCatalog = () => {
 
         {/* Search bar */}
         <div className="mx-auto mt-10 w-full max-w-xl">
-          <div
-            className="relative rounded-lg bg-ia-surface-card border border-ia-outline-variant flex items-center gap-2 transition-all duration-200 focus-within:border-ia-primary-container focus-within:ring-[3px] focus-within:ring-ia-primary-container/15"
-            style={{
-              padding: "8px 8px 8px 16px",
-              boxShadow: "var(--shadow-card)",
-            }}
-          >
-            <Search className="size-4.5 text-ia-secondary/50 shrink-0" aria-hidden="true" />
-            <Input
-              id="catalog-search"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search coffee, sardines, shampoo..."
-              className="h-10 border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 w-full text-sm text-ia-on-surface placeholder:text-ia-secondary/40 focus:outline-none"
-              autoComplete="off"
-              aria-label="Search products"
-            />
+          <div className="ia-bezel-outer p-1 bg-ia-surface-low transition-all duration-300 hover:border-ia-outline focus-within:ring-2 focus-within:ring-ia-primary-container/20">
+            <div className="ia-bezel-inner bg-white flex items-center gap-3 px-4 py-2">
+              <Search className="size-4.5 text-ia-secondary/50 shrink-0" aria-hidden="true" />
+              <Input
+                id="catalog-search"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search coffee, sardines, shampoo..."
+                className="h-10 border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 w-full text-sm text-ia-on-surface placeholder:text-ia-secondary/40 focus:outline-none focus:ring-0 focus-visible:outline-none"
+                autoComplete="off"
+                aria-label="Search products"
+              />
+            </div>
           </div>
 
           {/* Category filter chips */}
           <div
-            className="mt-4 flex gap-2 overflow-x-auto pb-1"
+            className="mt-5 flex gap-2 overflow-x-auto pb-1.5 scrollbar-none scroll-smooth"
             style={{ scrollbarWidth: "none" }}
             role="group"
             aria-label="Filter by category"
@@ -206,7 +208,7 @@ export const PublicCatalog = () => {
             {ALL_CATEGORIES.map((cat) => (
               <button
                 key={cat}
-                className="ia-filter-chip"
+                className="ia-filter-chip transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none ia-focus-ring"
                 data-active={activeCategory === cat ? "true" : "false"}
                 onClick={() => setActiveCategory(cat)}
                 aria-pressed={activeCategory === cat}
