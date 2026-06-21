@@ -12,7 +12,7 @@ import { AppTopBar } from "./AppTopBar";
 import { Package, Users, AlertCircle } from "lucide-react";
 import type { Customer, Product } from "@/lib/types";
 
-// ── Stat card component ──────────────────────────────────────────────────────
+// ── Stat card componentss ──────────────────────────────────────────────────────
 interface StatCardProps {
   label: string;
   value: string | number;
