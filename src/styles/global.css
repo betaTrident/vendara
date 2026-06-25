@@ -7,18 +7,16 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: 'Outfit', 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
-  --font-heading: 'Outfit', 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
 
-  /* ── Radius: industrial sharp ── */
-  --radius-sm:  4px;
-  --radius-md:  6px;
-  --radius-lg:  8px;
-  --radius-xl:  12px;
-  --radius-2xl: 16px;
-  --radius-3xl: 20px;
-  --radius-4xl: 24px;
+  /* ── Radii: Airbnb soft ── */
+  --radius-sm:  8px;
+  --radius-md:  14px;
+  --radius-lg:  20px;
+  --radius-xl:  32px;
+  --radius-full: 9999px;
 
   --color-background:                 var(--background);
   --color-foreground:                 var(--foreground);
@@ -52,91 +50,43 @@
   --color-sidebar-border:             var(--sidebar-border);
   --color-sidebar-ring:               var(--sidebar-ring);
 
-  /* ── Industrial Atelier direct tokens for components ── */
-  --color-ia-primary:            var(--ia-primary);
-  --color-ia-primary-container:  var(--ia-primary-container);
-  --color-ia-on-primary:         var(--ia-on-primary);
-  --color-ia-surface:            var(--ia-surface);
-  --color-ia-surface-low:        var(--ia-surface-low);
-  --color-ia-surface-high:       var(--ia-surface-high);
-  --color-ia-surface-card:       var(--ia-surface-card);
-  --color-ia-on-surface:         var(--ia-on-surface);
-  --color-ia-secondary:          var(--ia-secondary);
-  --color-ia-outline:            var(--ia-outline);
-  --color-ia-outline-variant:    var(--ia-outline-variant);
-  --color-ia-error:              var(--ia-error);
-  --color-ia-error-container:    var(--ia-error-container);
+  /* Airbnb Custom Color Tokens */
+  --color-canvas: #ffffff;
+  --color-surface-soft: #f7f7f7;
+  --color-surface-strong: #f2f2f2;
+  --color-ink: #222222;
+  --color-body: #3f3f3f;
+  --color-muted-text: #6a6a6a;
+  --color-hairline: #dddddd;
+  --color-hairline-soft: #ebebeb;
 }
 
 :root {
-  /* ── Industrial Atelier raw tokens (LIGHT) ── */
-  --ia-primary:            #b02f00;
-  --ia-primary-container:  #ff5722;
-  --ia-on-primary:         #ffffff;
-  --ia-surface:            #faf9f6;
-  --ia-surface-low:        #f3f1eb;
-  --ia-surface-high:       #e7e4db;
-  --ia-surface-card:       #ffffff;
-  --ia-on-surface:         #141718;
-  --ia-secondary:          #4e565a;
-  --ia-on-surface-variant: #5b4039;
-  --ia-outline:            #c5c1b5;
-  --ia-outline-variant:    #e2e0d6;
-  --ia-error:              #ba1a1a;
-  --ia-error-container:    #ffdad6;
-
-  /* ── Extended semantic tokens ── */
-  --ia-surface-overlay:    rgba(255, 87, 34, 0.04);
-  --ia-primary-subtle:     rgba(176, 47, 0, 0.06);
-  --ia-success:            #16a34a;
-  --ia-success-container:  #dcfce7;
-  --ia-warning:            #d97706;
-  --ia-warning-container:  #fef3c7;
-
-  /* ── Shadow scale ── */
-  --shadow-card:     0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
-  --shadow-elevated: 0 12px 32px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.03);
-  --shadow-focus:    0 0 0 3px rgba(255, 87, 34, 0.25);
-
-  /* ── shadcn/ui CSS variable remapping ── */
-  --background:            #faf9f6;
-  --foreground:            #141718;
+  /* shadcn custom CSS variable mapping with Airbnb Palette */
+  --background:            #f7f7f7;
+  --foreground:            #222222;
   --card:                  #ffffff;
-  --card-foreground:       #141718;
+  --card-foreground:       #222222;
   --popover:               #ffffff;
-  --popover-foreground:    #141718;
-  --primary:               #ff5722;
+  --popover-foreground:    #222222;
+  --primary:               #ff385c;
   --primary-foreground:    #ffffff;
-  --secondary:             #f3f1eb;
-  --secondary-foreground:  #4e565a;
-  --muted:                 #f3f1eb;
-  --muted-foreground:      #4e565a;
-  --accent:                #e7e4db;
-  --accent-foreground:     #141718;
-  --destructive:           #ba1a1a;
+  --secondary:             #f7f7f7;
+  --secondary-foreground:  #222222;
+  --muted:                 #f7f7f7;
+  --muted-foreground:      #6a6a6a;
+  --accent:                #f2f2f2;
+  --accent-foreground:     #222222;
+  --destructive:           #c13515;
   --destructive-foreground:#ffffff;
-  --border:                rgba(0, 0, 0, 0.07);
-  --input:                 rgba(0, 0, 0, 0.10);
-  --ring:                  #ff5722;
+  --border:                #dddddd;
+  --input:                 #dddddd;
+  --ring:                  #ff385c;
 
-  --radius: 0.25rem; /* 4px */
+  --radius: 8px;
 
-  /* ── Chart palette: orange-first ── */
-  --chart-1:               #ff5722;
-  --chart-2:               #b02f00;
-  --chart-3:               #f0a500;
-  --chart-4:               #546067;
-  --chart-5:               #e8e8e8;
-
-  /* ── Sidebar: light industrial white ── */
-  --sidebar:                    #ffffff;
-  --sidebar-foreground:         #1a1c1c;
-  --sidebar-primary:            #b02f00;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent:             #f0f0f0;
-  --sidebar-accent-foreground:  #1a1c1c;
-  --sidebar-border:             rgba(0, 0, 0, 0.07);
-  --sidebar-ring:               #ff5722;
+  /* Custom shadow tier for hover floats and overlays */
+  --shadow-hover: rgba(0, 0, 0, 0.02) 0 0 0 1px, rgba(0, 0, 0, 0.04) 0 2px 6px, rgba(0, 0, 0, 0.1) 0 4px 8px;
 }
 
 html {
@@ -148,8 +98,8 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100dvh;
-  background-color: var(--ia-surface);
-  color: var(--ia-on-surface);
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 @layer base {
@@ -167,399 +117,138 @@ body {
   }
 }
 
-/* ══════════════════════════════════════════
-   INDUSTRIAL ATELIER DESIGN UTILITIES
-══════════════════════════════════════════ */
 @layer utilities {
-  /* Double Bezel (Doppelrand) Nested Card Architecture */
-  .ia-bezel-outer {
-    background-color: var(--ia-surface-low);
-    border: 1px solid var(--ia-outline-variant);
-    padding: 0.5rem; /* 8px outer tray padding */
-    border-radius: 16px; /* xl equivalent */
-    box-shadow: var(--shadow-card);
-    transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  
-  .ia-bezel-inner {
-    background-color: var(--ia-surface-card);
-    border: 1px solid var(--ia-outline-variant);
-    border-radius: 10px; /* Concentric curve nested inside 16px radius */
-    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.9);
-    transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  /* Custom spring-like motion and hover helpers */
-  .ia-spring {
-    transition: all 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  .ia-spring-hover {
-    transition: all 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  .ia-spring-hover:hover {
-    transform: translateY(-2px) scale(1.008);
-  }
-  .ia-spring-active:active {
-    transform: translateY(1px) scale(0.98);
-  }
-
-  /* Accessibility focus styles override */
-  .ia-focus-ring:focus-visible {
-    outline: none !important;
-    border-color: var(--ia-primary-container) !important;
-    box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.25) !important;
-  }
-
-  /* Signature gradient: 135° primary → Racing Orange */
-  .ia-gradient {
-    background: linear-gradient(135deg, var(--ia-primary) 0%, var(--ia-primary-container) 100%);
-  }
-
-  /* Brand panel gradient (left dark panel on login) */
-  .ia-brand-gradient {
-    background: linear-gradient(150deg, #1a0800 0%, #2d0f00 40%, #3d1800 100%);
-  }
-
-  /* Card header "well" - surface-container-high, with subtle left accent */
-  .ia-well {
-    background-color: var(--ia-surface-high);
-    border-bottom: 1px solid var(--ia-outline-variant);
-    padding: 0.875rem 1.25rem;
-    position: relative;
-  }
-  .ia-well::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: var(--ia-primary-container);
-    opacity: 0;
-    transition: opacity 0.2s ease;
-  }
-
-  /* Label scale: 11px all-caps bold tracking */
-  .ia-label {
-    font-size: 0.6875rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ia-secondary);
-  }
-
-  /* Status chip colors */
-  .ia-chip-green  { @apply bg-emerald-50 text-emerald-700 border border-emerald-200/60; }
-  .ia-chip-orange { @apply bg-orange-50 text-orange-700 border border-orange-200/60; }
-  .ia-chip-red    { @apply bg-red-50 text-red-700 border border-red-200/60; }
-  .ia-chip-yellow { @apply bg-amber-50 text-amber-700 border border-amber-200/60; }
-  .ia-chip-blue   { @apply bg-blue-50 text-blue-700 border border-blue-200/60; }
-  .ia-chip-green-solid { background: var(--ia-success-container); color: var(--ia-success); }
-
-  /* Filter chip — for public catalog category filters */
-  .ia-filter-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 5px 14px;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    border: 1px solid var(--ia-outline-variant);
-    background: var(--ia-surface-card);
-    color: var(--ia-secondary);
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 150ms ease;
-    user-select: none;
-  }
-  .ia-filter-chip:hover {
-    border-color: var(--ia-outline);
-    color: var(--ia-on-surface);
-    background: var(--ia-surface-high);
-  }
-  .ia-filter-chip[data-active="true"] {
-    background: var(--ia-primary-container);
-    border-color: var(--ia-primary-container);
-    color: var(--ia-on-primary);
-  }
-
-  /* Progress bar - thin 2px industrial style */
-  .ia-progress-track {
-    height: 2px;
-    background-color: var(--ia-surface-high);
-    border-radius: 1px;
-    overflow: hidden;
-  }
-  .ia-progress-fill {
-    height: 100%;
-    background-color: var(--ia-primary-container);
-    border-radius: 1px;
-    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  /* Stat card tile */
-  .ia-stat-card {
-    background: var(--ia-surface-card);
-    border: 1px solid var(--ia-outline-variant);
-    border-radius: 8px;
-    padding: 1.375rem 1.5rem;
-    position: relative;
-    overflow: hidden;
-    box-shadow: var(--shadow-card);
+  /* Cards and Bezel replacements */
+  .vn-card {
+    background-color: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-md);
     transition: box-shadow 200ms ease, border-color 200ms ease;
   }
-  .ia-stat-card:hover {
-    box-shadow: var(--shadow-elevated);
-    border-color: var(--ia-outline);
+  .vn-card:hover {
+    box-shadow: var(--shadow-hover);
   }
-  .ia-stat-card::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--ia-primary-container) 0%, transparent 100%);
-    opacity: 0;
-    transition: opacity 200ms ease;
-  }
-  .ia-stat-card:hover::after {
-    opacity: 1;
-  }
-  /* Error-accented stat card */
-  .ia-stat-card--error {
-    border-color: rgba(186, 26, 26, 0.2);
-    background: rgba(255, 218, 214, 0.12);
-  }
-  .ia-stat-card--error::after {
-    background: linear-gradient(90deg, var(--ia-error) 0%, transparent 100%);
+  
+  .vn-card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--color-hairline-soft);
   }
 
-  /* Skeleton shimmer loading animation */
-  .ia-skeleton {
-    background: linear-gradient(90deg,
-      var(--ia-surface-high) 25%,
-      var(--ia-surface-low) 50%,
-      var(--ia-surface-high) 75%
-    );
-    background-size: 200% 100%;
-    animation: ia-shimmer 1.6s ease-in-out infinite;
-    border-radius: 4px;
+  .vn-label {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-ink);
   }
 
-  /* Stagger animation helpers */
-  .ia-stagger-1 { animation-delay: 0ms; }
-  .ia-stagger-2 { animation-delay: 60ms; }
-  .ia-stagger-3 { animation-delay: 120ms; }
-  .ia-stagger-4 { animation-delay: 180ms; }
-  .ia-stagger-5 { animation-delay: 240ms; }
-  .ia-stagger-6 { animation-delay: 300ms; }
-
-  /* Slide-up entry */
-  .ia-slide-up {
-    animation: ia-slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
-  }
-
-  /* Fade-in entry */
-  .ia-fade-in {
-    animation: ia-fade-in 0.25s ease both;
-  }
-
-  /* ── Split-pane layout for Customers/Ledger tab ── */
-  .ia-split-pane {
-    display: flex;
-    height: calc(100vh - 220px);
-    min-height: 520px;
-    border: 1px solid var(--ia-outline-variant);
-    border-radius: 8px;
-    overflow: hidden;
-    background: var(--ia-surface-card);
-    box-shadow: var(--shadow-card);
-  }
-  .ia-split-pane__list {
-    width: 280px;
-    flex-shrink: 0;
-    border-right: 1px solid var(--ia-outline-variant);
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-  }
-  .ia-split-pane__detail {
-    flex: 1;
-    overflow-y: auto;
-    min-width: 0;
-  }
-
-  /* ── Toolbar: action bar at top of tab content ── */
-  .ia-toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-  .ia-toolbar__left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex: 1;
-    min-width: 0;
-  }
-  .ia-toolbar__right {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-  }
-
-  /* ── Form field wrapper ── */
-  .ia-form-field {
+  /* Form layouts */
+  .vn-form-field {
     display: flex;
     flex-direction: column;
     gap: 6px;
   }
-  .ia-form-field label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--ia-secondary);
+
+  /* Inputs, select, textarea */
+  .vn-input {
+    background-color: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-size: 14px;
+    color: var(--color-ink);
+    transition: border-color 200ms ease;
+  }
+  .vn-input:focus {
+    outline: none;
+    border: 2px solid var(--color-ink);
+    padding: 11px 13px; /* compensate for 2px border width to prevent layout shifts */
+  }
+  
+  /* Tables */
+  .vn-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .vn-table-header {
+    background-color: var(--color-surface-soft);
+    border-bottom: 1px solid var(--color-hairline);
+  }
+  .vn-table-row {
+    border-bottom: 1px solid var(--color-hairline-soft);
+    transition: background-color 150ms ease;
+  }
+  .vn-table-row:hover {
+    background-color: var(--color-surface-soft);
   }
 
-  /* ── Customer list item in split-pane ── */
-  .ia-customer-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--ia-outline-variant);
-    cursor: pointer;
-    position: relative;
-    transition: background 150ms ease;
+  /* Badges */
+  .vn-badge-rose {
+    background-color: #fff1f2;
+    color: #c13515;
+    border: 1px solid #ffe4e6;
   }
-  .ia-customer-item:hover {
-    background: var(--ia-surface-low);
-  }
-  .ia-customer-item[data-active="true"] {
-    background: var(--ia-surface-overlay);
-    border-left: 2px solid var(--ia-primary-container);
-    padding-left: 14px;
-  }
-  .ia-customer-item[data-active="true"] .ia-customer-item__name {
-    color: var(--ia-on-surface);
-    font-weight: 600;
+  .vn-badge-emerald {
+    background-color: #f0fdf4;
+    color: #15803d;
+    border: 1px solid #dcfce7;
   }
 
-  /* ── Product card hover (for public catalog) ── */
-  .ia-product-card {
+  /* Timeline */
+  .vn-timeline-line {
     position: relative;
-    background: var(--ia-surface-card);
-    border: 1px solid var(--ia-outline-variant);
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: var(--shadow-card);
-    transition: box-shadow 200ms ease, border-color 200ms ease, transform 200ms ease;
+    border-left: 1px solid var(--color-hairline-soft);
+    padding-left: 20px;
   }
-  .ia-product-card:hover {
-    box-shadow: var(--shadow-elevated);
-    border-color: rgba(255, 87, 34, 0.35);
-    transform: translateY(-1px);
-  }
-  .ia-product-card__accent {
+  .vn-timeline-node {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--ia-primary-container);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 250ms ease-out;
+    left: -5.5px;
+    top: 6px;
+    width: 10px;
+    height: 10px;
+    border-radius: var(--radius-full);
   }
-  .ia-product-card:hover .ia-product-card__accent {
-    transform: scaleX(1);
+  .vn-timeline-node-rose {
+    background-color: #ff385c;
+  }
+  .vn-timeline-node-emerald {
+    background-color: #15803d;
   }
 
-  /* ── Markup badge color variants ── */
-  .ia-markup-low  { @apply bg-amber-50 text-amber-700 border border-amber-200/60; }
-  .ia-markup-good { @apply bg-emerald-50 text-emerald-700 border border-emerald-200/60; }
-  .ia-markup-high { @apply bg-orange-50 text-orange-700 border border-orange-200/60; }
+  /* Pulse indicator */
+  .vn-pulse-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background-color: var(--color-primary);
+    animation: vn-pulse 1.8s ease-in-out infinite;
+  }
+
+  /* Shimmer skeleton */
+  .vn-skeleton {
+    background: linear-gradient(90deg,
+      var(--color-surface-strong) 25%,
+      var(--color-surface-soft) 50%,
+      var(--color-surface-strong) 75%
+    );
+    background-size: 200% 100%;
+    animation: vn-shimmer 1.6s ease-in-out infinite;
+    border-radius: 4px;
+  }
 }
 
-/* ── Keyframes ── */
-@keyframes ia-shimmer {
+@keyframes vn-shimmer {
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
 
-@keyframes ia-slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes ia-fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-@keyframes ia-pulse-dot {
+@keyframes vn-pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
   50%       { opacity: 0.5; transform: scale(0.8); }
 }
 
-/* ── Scrollbar: thin industrial style ── */
+/* Thin default scrollbar */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: var(--ia-surface-low); }
-::-webkit-scrollbar-thumb { background: var(--ia-outline); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: var(--ia-secondary); }
-
-@layer utilities {
-  /* Prevent iOS Safari auto-zoom on inputs */
-  .ia-mobile-input-zoom-fix input,
-  .ia-mobile-input-zoom-fix select,
-  .ia-mobile-input-zoom-fix textarea {
-    font-size: 16px !important;
-  }
-
-  /* Standard 44px mobile touch targets */
-  .touch-target {
-    min-height: 44px;
-    min-width: 44px;
-  }
-
-  /* Tabular numbers for financial data */
-  .tabular-nums {
-    font-variant-numeric: tabular-nums;
-  }
-
-  /* Initials avatar */
-  .ia-avatar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 6px;
-    font-size: 0.6875rem;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    flex-shrink: 0;
-    user-select: none;
-  }
-
-  /* Pulse dot for outstanding credit indicator */
-  .ia-pulse-dot {
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background-color: #ba1a1a;
-    animation: ia-pulse-dot 1.8s ease-in-out infinite;
-  }
-}
+::-webkit-scrollbar-track { background: var(--color-surface-soft); }
+::-webkit-scrollbar-thumb { background: var(--color-hairline); border-radius: var(--radius-sm); }
+::-webkit-scrollbar-thumb:hover { background: var(--color-muted-text); }

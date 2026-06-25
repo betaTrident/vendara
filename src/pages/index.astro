@@ -1,8 +1,4 @@
 ---
-import { PublicCatalog } from "@/components/app/PublicCatalog";
-import BaseLayout from "@/layouts/BaseLayout.astro";
+// Redirect directly to /admin for the admin-only direction
+return Astro.redirect("/admin");
 ---
-
-<BaseLayout title="Vendara | Pricelist Search">
-  <PublicCatalog client:load />
-</BaseLayout>

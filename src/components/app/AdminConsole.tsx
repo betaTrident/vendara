@@ -12,14 +12,13 @@ import { AppTopBar } from "./AppTopBar";
 import { Package, Users, AlertCircle } from "lucide-react";
 import type { Customer, Product } from "@/lib/types";
 
-// ── Stat card componentss ──────────────────────────────────────────────────────
+// ── Stat card components ──────────────────────────────────────────────────────
 interface StatCardProps {
   label: string;
   value: string | number;
   sub?: string;
   icon: React.ElementType;
   accent?: "default" | "error";
-  index?: number;
 }
 
 const StatCard = ({
@@ -28,61 +27,57 @@ const StatCard = ({
   sub,
   icon: Icon,
   accent = "default",
-  index = 0,
 }: StatCardProps) => (
-  <div
-    className={`ia-bezel-outer ia-slide-up ia-stagger-${index + 1} ia-spring-hover group`}
-  >
-    <div className={`ia-bezel-inner p-5 h-full ${accent === "error" ? "bg-red-50/10 border-red-200/50" : "bg-white"}`}>
-      <div className="flex items-start justify-between gap-3">
-        <div className="space-y-1.5 min-w-0">
-          <p className="ia-label text-[10px] text-ia-secondary font-bold uppercase tracking-wider font-sans">{label}</p>
+  <div className="vn-card p-5 flex flex-col justify-between min-h-[120px]">
+    <div className="flex items-start justify-between gap-3">
+      <div className="space-y-1.5 min-w-0">
+        <p className="text-[10px] text-muted-text font-semibold uppercase tracking-wider font-sans">
+          {label}
+        </p>
+        <div className="flex items-center gap-2">
           <p
-            className={`text-3xl font-bold tracking-tight font-mono tabular-nums leading-none ${
-              accent === "error" ? "text-ia-error" : "text-ia-on-surface"
+            className={`text-2xl font-semibold tracking-tight tabular-nums leading-none ${
+              accent === "error" ? "text-destructive" : "text-ink"
             }`}
           >
             {value}
           </p>
-          {sub && (
-            <p className="text-[11px] text-ia-secondary/85 font-semibold leading-relaxed mt-1">{sub}</p>
+          {accent === "error" && (
+            <span className="vn-pulse-dot" aria-label="Outstanding debt alert" />
           )}
         </div>
-        <div
-          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border transition-all duration-350 group-hover:scale-110 ${
-            accent === "error"
-              ? "bg-red-50 text-ia-error border-red-150"
-              : "bg-ia-surface text-ia-secondary border-ia-outline-variant"
-          }`}
-        >
-          <Icon className="size-5" />
-        </div>
+        {sub && (
+          <p className="text-xs text-muted-text font-medium leading-relaxed mt-1">
+            {sub}
+          </p>
+        )}
+      </div>
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-surface-soft text-ink border border-hairline">
+        <Icon className="size-5" />
       </div>
     </div>
   </div>
 );
 
 // ── Skeleton stat card ───────────────────────────────────────────────────────
-const StatCardSkeleton = ({ index = 0 }: { index?: number }) => (
-  <div className={`ia-bezel-outer ia-fade-in ia-stagger-${index + 1}`}>
-    <div className="ia-bezel-inner p-5 bg-white space-y-4">
-      <div className="flex items-start justify-between gap-3">
-        <div className="space-y-3 flex-1">
-          <div className="ia-skeleton h-3 w-24 rounded" />
-          <div className="ia-skeleton h-7 w-20 rounded" />
-          <div className="ia-skeleton h-3 w-28 rounded" />
-        </div>
-        <div className="ia-skeleton h-11 w-11 rounded-lg" />
+const StatCardSkeleton = () => (
+  <div className="vn-card p-5 space-y-4 min-h-[120px]">
+    <div className="flex items-start justify-between gap-3">
+      <div className="space-y-3 flex-1">
+        <div className="vn-skeleton h-3.5 w-24" />
+        <div className="vn-skeleton h-7 w-20" />
+        <div className="vn-skeleton h-3 w-28" />
       </div>
+      <div className="vn-skeleton h-10 w-10 rounded-sm" />
     </div>
   </div>
 );
 
 // ── Tab trigger class ────────────────────────────────────────────────────────
 const TAB_TRIGGER_CLASS =
-  "relative rounded-lg px-6 py-2.5 text-xs font-bold tracking-normal transition-all duration-300 text-ia-secondary hover:text-ia-on-surface cursor-pointer shadow-none border-0 " +
-  "data-[state=active]:text-ia-on-primary data-[state=active]:bg-ia-primary-container data-[state=active]:shadow-sm " +
-  "active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ia-primary-container/20";
+  "relative rounded-none px-4 py-3 text-sm font-semibold transition-all text-muted-text hover:text-ink cursor-pointer shadow-none border-b-2 border-transparent " +
+  "data-[state=active]:text-primary data-[state=active]:border-primary " +
+  "focus-visible:outline-none";
 
 // ── AdminConsole ─────────────────────────────────────────────────────────────
 export const AdminConsole = () => {
@@ -160,20 +155,20 @@ export const AdminConsole = () => {
   // ── Checking session (full-page skeleton) ──────────────────────────────────
   if (isCheckingSession) {
     return (
-      <div className="min-h-dvh bg-ia-surface text-ia-on-surface">
+      <div className="min-h-dvh bg-background text-ink">
         <AppTopBar isAuthenticated={false} />
         <main id="main-content" className="mx-auto max-w-7xl px-4 py-8 sm:px-6 space-y-6">
           <div className="h-12 flex flex-col gap-2">
-            <div className="ia-skeleton h-5 w-48 rounded" />
-            <div className="ia-skeleton h-3 w-72 rounded" />
+            <div className="vn-skeleton h-5 w-48" />
+            <div className="vn-skeleton h-3 w-72" />
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
-            <StatCardSkeleton index={0} />
-            <StatCardSkeleton index={1} />
-            <StatCardSkeleton index={2} />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
           </div>
-          <div className="ia-skeleton h-10 w-56 rounded-md" />
-          <div className="ia-skeleton h-72 w-full rounded-lg" />
+          <div className="vn-skeleton h-10 w-56 rounded-sm" />
+          <div className="vn-skeleton h-72 w-full rounded-md" />
         </main>
       </div>
     );
@@ -182,7 +177,7 @@ export const AdminConsole = () => {
   // ── Not authenticated → show login ─────────────────────────────────────────
   if (!isAuthenticated) {
     return (
-      <div className="min-h-dvh bg-ia-surface text-ia-on-surface">
+      <div className="min-h-dvh bg-background text-ink">
         <AdminLogin onAuthenticated={loadSession} />
       </div>
     );
@@ -190,22 +185,22 @@ export const AdminConsole = () => {
 
   // ── Authenticated console ──────────────────────────────────────────────────
   return (
-    <div className="min-h-dvh bg-ia-surface text-ia-on-surface">
+    <div className="min-h-dvh bg-background text-ink">
       <AppTopBar isAuthenticated={true} onLogout={handleLogout} />
 
       <main id="main-content" className="mx-auto max-w-7xl px-4 py-8 sm:px-6 space-y-6">
 
         {/* ── Page header ── */}
-        <header className="ia-fade-in space-y-1">
+        <header className="space-y-1">
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-bold tracking-tight text-ia-on-surface">
+            <h1 className="text-2xl font-semibold tracking-tight text-ink font-heading">
               Workspace Operations
             </h1>
-            <Badge className="rounded-[4px] ia-chip-orange text-[10px] px-2 py-0.5 font-bold uppercase font-mono tracking-wider border-0">
+            <Badge className="rounded-full bg-primary/10 text-primary border border-primary/20 text-[10px] px-2.5 py-0.5 font-semibold">
               Admin
             </Badge>
           </div>
-          <p className="text-sm text-ia-secondary leading-relaxed">
+          <p className="text-sm text-muted-text">
             Manage product catalog, customer accounts, and credit ledgers.
           </p>
         </header>
@@ -214,28 +209,25 @@ export const AdminConsole = () => {
         <div className="grid gap-4 sm:grid-cols-3">
           {!statsData.statsLoaded ? (
             <>
-              <StatCardSkeleton index={0} />
-              <StatCardSkeleton index={1} />
-              <StatCardSkeleton index={2} />
+              <StatCardSkeleton />
+              <StatCardSkeleton />
+              <StatCardSkeleton />
             </>
           ) : (
             <>
               <StatCard
-                index={0}
                 label="Products in catalog"
                 value={statsData.productCount}
                 sub={statsData.productCount === 1 ? "item tracked" : "items tracked"}
                 icon={Package}
               />
               <StatCard
-                index={1}
                 label="Customer accounts"
                 value={statsData.customerCount}
                 sub={`${statsData.settledCount} settled · ${statsData.customerCount - statsData.settledCount} outstanding`}
                 icon={Users}
               />
               <StatCard
-                index={2}
                 label="Total credit outstanding"
                 value={`₱${statsData.totalOutstanding.toFixed(2)}`}
                 sub={
@@ -253,7 +245,7 @@ export const AdminConsole = () => {
         {/* ── Tabs ── */}
         <Tabs defaultValue="products" className="space-y-0">
           <TabsList
-            className="flex gap-1.5 bg-ia-surface-low border border-ia-outline-variant/60 p-1 rounded-xl h-auto w-max justify-start"
+            className="flex gap-6 border-b border-hairline p-0 rounded-none h-auto w-full justify-start bg-transparent"
             id="admin-tab-list"
           >
             <TabsTrigger
