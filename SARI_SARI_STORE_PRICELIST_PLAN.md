@@ -14,7 +14,7 @@
 
 The system has three main parts:
 
-1. `Admin panel`
+1. `Administrator panel`
 The store owner manages products, prices, customers, ledger entries, and payments.
 
 2. `Public search page`
