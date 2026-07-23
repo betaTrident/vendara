@@ -22,3 +22,8 @@ export const getServerEnv = () => ({
   publicNeonAuthUrl: getRequiredEnv("PUBLIC_NEON_AUTH_URL"),
 });
 
+export const getDeploymentLabel = () =>
+  process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 12) ??
+  process.env.VERCEL_ENV ??
+  "local";
+

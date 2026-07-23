@@ -1,6 +1,10 @@
 import { createRemoteJWKSet, jwtVerify } from "jose";
 
-import { jsonError } from "@/lib/api";
+import {
+  API_ERROR_CODES,
+  jsonError,
+  resolveRequestId,
+} from "@/lib/api";
 import { getServerEnv } from "@/lib/env.server";
 import { getBearerTokenFromHeaders, hasTrustedOrigin, normalizeAdminEmail } from "@/lib/auth/http";
 import { getActiveAdminUserByEmail } from "@/lib/server/admin-users-repository";
@@ -103,20 +107,41 @@ export const getAuthenticatedAdmin = async (
   }
 };
 
-export const requireAdmin = async (request: Request) => {
+/** Read-only business routes: verified active owner, no origin check. */
+export const requireOwner = async (request: Request) => {
+  const requestId = resolveRequestId(request);
   const admin = await getAuthenticatedAdmin(request);
 
   if (!admin) {
-    return jsonError("Unauthorized.", 401);
+    return jsonError(
+      API_ERROR_CODES.UNAUTHENTICATED,
+      "Unauthorized.",
+      401,
+      { requestId },
+    );
   }
 
   return admin;
 };
 
-export const requireTrustedAdmin = async (request: Request) => {
+/** State-changing business routes: verified active owner plus trusted origin. */
+export const requireOwnerMutation = async (request: Request) => {
+  const requestId = resolveRequestId(request);
+
   if (!hasTrustedOrigin(request.headers)) {
-    return jsonError("Invalid origin.", 403);
+    return jsonError(
+      API_ERROR_CODES.FORBIDDEN,
+      "Invalid origin.",
+      403,
+      { requestId },
+    );
   }
 
-  return requireAdmin(request);
+  return requireOwner(request);
 };
+
+/** @deprecated Use requireOwner */
+export const requireAdmin = requireOwner;
+
+/** @deprecated Use requireOwnerMutation */
+export const requireTrustedAdmin = requireOwnerMutation;

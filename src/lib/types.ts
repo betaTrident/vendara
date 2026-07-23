@@ -48,8 +48,19 @@ export type LedgerEntry = {
   totalAmount: number | null;
   note: string | null;
   entryDate: string;
+  idempotencyKey: string | null;
+  voidedAt: string | null;
+  voidedBy: string | null;
+  voidReason: string | null;
   createdAt: string;
   updatedAt: string;
   items: LedgerEntryItem[];
   runningBalance?: number;
+};
+
+export type OwnerSummary = {
+  activeProductCount: number;
+  customerCount: number;
+  customersWithBalanceCount: number;
+  totalOutstanding: number;
 };

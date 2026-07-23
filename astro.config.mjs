@@ -1,19 +1,52 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig } from "astro/config";
 
-import react from '@astrojs/react';
+import react from "@astrojs/react";
 
-import tailwindcss from '@tailwindcss/vite';
-import vercel from '@astrojs/vercel';
+import tailwindcss from "@tailwindcss/vite";
+import vercel from "@astrojs/vercel";
+import AstroPWA from "@vite-pwa/astro";
+
+import {
+  OFFLINE_PAGE_PATH,
+  VENDARA_PWA_MANIFEST,
+  buildWorkboxRuntimeCaching,
+} from "./src/lib/pwa/cache-policy.ts";
+
+const neonAuthUrl = process.env.PUBLIC_NEON_AUTH_URL ?? "";
+const neonAuthOrigin = neonAuthUrl ? new URL(neonAuthUrl).origin : undefined;
 
 // https://astro.build/config
 export default defineConfig({
   output: "server",
-  integrations: [react()],
+  integrations: [
+    react(),
+    AstroPWA({
+      registerType: "prompt",
+      injectRegister: "auto",
+      includeAssets: ["favicon.svg", "icons/*.png"],
+      manifest: VENDARA_PWA_MANIFEST,
+      workbox: {
+        navigateFallback: OFFLINE_PAGE_PATH,
+        navigateFallbackDenylist: [/^\/api\//],
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: false,
+        runtimeCaching: buildWorkboxRuntimeCaching(neonAuthOrigin),
+      },
+      devOptions: {
+        enabled: true,
+        navigateFallback: OFFLINE_PAGE_PATH,
+      },
+      experimental: {
+        directoryAndTrailingSlashHandler: true,
+      },
+    }),
+  ],
 
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
   },
 
-  adapter: vercel()
+  adapter: vercel(),
 });

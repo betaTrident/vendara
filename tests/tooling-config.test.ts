@@ -35,4 +35,25 @@ describe("tooling configuration", () => {
       expect.arrayContaining(["node", "vitest/globals"]),
     );
   });
+
+  test("declares migration scripts for versioned database changes", () => {
+    const packageJson = readJson<{
+      scripts?: Record<string, string>;
+    }>("package.json");
+
+    expect(packageJson.scripts).toMatchObject({
+      "db:migrate": expect.stringContaining("db-migrate.mjs"),
+      "db:migrate:status": expect.stringContaining("--status"),
+    });
+  });
+
+  test("declares the approved PWA integration dependency", () => {
+    const packageJson = readJson<{
+      dependencies?: Record<string, string>;
+    }>("package.json");
+
+    expect(packageJson.dependencies?.["@vite-pwa/astro"]).toEqual(
+      expect.any(String),
+    );
+  });
 });

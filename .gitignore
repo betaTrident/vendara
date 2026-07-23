@@ -27,3 +27,6 @@ test-results/
 
 # vercel
 .vercel/
+
+# npm local config overrides (optional)
+# .npmrc is committed for legacy-peer-deps with @vite-pwa/astro on Astro 6

@@ -1,3 +1,5 @@
+import { multiplyMoney, sumMoney } from "@/lib/domain/money";
+
 export type LedgerProductSnapshot = {
   id: string;
   name: string;
@@ -41,12 +43,12 @@ export const buildDebtEntrySnapshot = (
     unitCostPriceSnapshot: product.costPrice,
     unitSellingPriceSnapshot: product.sellingPrice,
     quantity,
-    lineTotal: product.sellingPrice * quantity,
+    lineTotal: multiplyMoney(product.sellingPrice, quantity),
   }));
 
   return {
     items,
-    totalAmount: items.reduce((sum, item) => sum + item.lineTotal, 0),
+    totalAmount: sumMoney(items.map((item) => item.lineTotal)),
   };
 };
 

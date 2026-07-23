@@ -54,6 +54,22 @@ export const mapLedgerEntryRow = (row: Record<string, unknown>): LedgerEntry => 
       : toNumber(row.total_amount),
   note: (row.note as string | null) ?? null,
   entryDate: toStringValue(row.entry_date),
+  idempotencyKey:
+    row.idempotency_key === null || row.idempotency_key === undefined
+      ? null
+      : toStringValue(row.idempotency_key),
+  voidedAt:
+    row.voided_at === null || row.voided_at === undefined
+      ? null
+      : toStringValue(row.voided_at),
+  voidedBy:
+    row.voided_by === null || row.voided_by === undefined
+      ? null
+      : toStringValue(row.voided_by),
+  voidReason:
+    row.void_reason === null || row.void_reason === undefined
+      ? null
+      : toStringValue(row.void_reason),
   createdAt: toStringValue(row.created_at),
   updatedAt: toStringValue(row.updated_at),
   items: [],

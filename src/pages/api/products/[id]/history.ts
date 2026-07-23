@@ -1,19 +1,33 @@
 import type { APIRoute } from "astro";
 
-import { jsonError, jsonOk } from "@/lib/api";
-import { requireAdmin } from "@/lib/auth/admin";
+import {
+  API_ERROR_CODES,
+  jsonError,
+  jsonOk,
+  resolveRequestId,
+} from "@/lib/api";
+import { requireOwner } from "@/lib/auth/admin";
 import { listPriceHistory } from "@/lib/server/products-repository";
+import { parseRouteUuid } from "@/lib/validation";
 
 export const GET: APIRoute = async ({ params, request }) => {
-  const admin = await requireAdmin(request);
+  const owner = await requireOwner(request);
+  const requestId = resolveRequestId(request);
 
-  if (admin instanceof Response) {
-    return admin;
+  if (owner instanceof Response) {
+    return owner;
   }
 
-  if (!params.id) {
-    return jsonError("Missing product ID.");
+  const productId = parseRouteUuid(params.id);
+
+  if (!productId.ok) {
+    return jsonError(
+      API_ERROR_CODES.VALIDATION_ERROR,
+      "Product ID must be a valid UUID.",
+      400,
+      { requestId },
+    );
   }
 
-  return jsonOk(await listPriceHistory(params.id));
+  return jsonOk(await listPriceHistory(productId.value), { requestId });
 };

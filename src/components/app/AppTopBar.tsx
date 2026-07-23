@@ -1,7 +1,10 @@
-import { LogOut, Lock, ShieldCheck } from "lucide-react";
+import { LogOut, ShieldCheck } from "lucide-react";
+
+import { ConnectionStatus } from "@/components/app/ConnectionStatus";
 
 interface AppTopBarProps {
   isAuthenticated?: boolean;
+  isOnline?: boolean;
   onLogout?: () => void;
 }
 
@@ -25,7 +28,11 @@ const VendaraLogo = () => (
   </svg>
 );
 
-export const AppTopBar = ({ isAuthenticated, onLogout }: AppTopBarProps) => {
+export const AppTopBar = ({
+  isAuthenticated,
+  isOnline,
+  onLogout,
+}: AppTopBarProps) => {
   return (
     <header
       className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-hairline-soft transition-all duration-300"
@@ -48,7 +55,7 @@ export const AppTopBar = ({ isAuthenticated, onLogout }: AppTopBarProps) => {
             </span>
             {isAuthenticated && (
               <span className="text-[10px] font-semibold text-muted-text leading-none mt-1 tracking-wide uppercase font-sans">
-                Admin Console
+                Store workspace
               </span>
             )}
           </div>
@@ -57,10 +64,8 @@ export const AppTopBar = ({ isAuthenticated, onLogout }: AppTopBarProps) => {
         {/* Right — Auth Actions */}
         <div className="flex items-center gap-2">
           {isAuthenticated ? (
-            <div className="flex items-center gap-4">
-              <span className="hidden sm:inline text-xs font-medium text-muted-text">
-                Store Manager
-              </span>
+            <div className="flex items-center gap-3 sm:gap-4">
+              <ConnectionStatus isOnline={isOnline} />
               <button
                 id="topbar-signout-btn"
                 onClick={onLogout}

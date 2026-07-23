@@ -4,12 +4,12 @@ import { createProductService } from "@/lib/services/products";
 
 describe("product service", () => {
   it("writes price history when a product price changes", async () => {
-    const save = vi.fn();
-    const savePriceHistory = vi.fn();
+    const saveProductUpdateWithPriceHistory = vi.fn().mockResolvedValue({
+      id: "product-1",
+    });
 
     const service = createProductService({
-      save,
-      savePriceHistory,
+      saveProductUpdateWithPriceHistory,
     });
 
     await service.update({
@@ -28,23 +28,29 @@ describe("product service", () => {
       },
     });
 
-    expect(savePriceHistory).toHaveBeenCalledWith({
-      productId: "product-1",
-      oldCostPrice: 10,
-      newCostPrice: 12,
-      oldSellingPrice: 15,
-      newSellingPrice: 18,
+    expect(saveProductUpdateWithPriceHistory).toHaveBeenCalledWith({
+      id: "product-1",
+      next: {
+        name: "Coffee",
+        costPrice: 12,
+        sellingPrice: 18,
+        note: "new batch",
+      },
+      priceHistory: {
+        productId: "product-1",
+        oldCostPrice: 10,
+        newCostPrice: 12,
+        oldSellingPrice: 15,
+        newSellingPrice: 18,
+      },
     });
-    expect(save).toHaveBeenCalled();
   });
 
   it("does not write price history when only note changes", async () => {
-    const save = vi.fn();
-    const savePriceHistory = vi.fn();
+    const saveProductUpdateWithPriceHistory = vi.fn();
 
     const service = createProductService({
-      save,
-      savePriceHistory,
+      saveProductUpdateWithPriceHistory,
     });
 
     await service.update({
@@ -63,7 +69,15 @@ describe("product service", () => {
       },
     });
 
-    expect(savePriceHistory).not.toHaveBeenCalled();
-    expect(save).toHaveBeenCalled();
+    expect(saveProductUpdateWithPriceHistory).toHaveBeenCalledWith({
+      id: "product-1",
+      next: {
+        name: "Coffee",
+        costPrice: 10,
+        sellingPrice: 15,
+        note: "same prices",
+      },
+      priceHistory: null,
+    });
   });
 });

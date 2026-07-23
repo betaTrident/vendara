@@ -1,4 +1,6 @@
 import { buildDebtEntrySnapshot } from "@/lib/domain/ledger";
+import { PaymentExceedsBalanceError } from "@/lib/server/ledger-repository";
+import { parseMoney } from "@/lib/domain/money";
 
 type ProductLookup = {
   id: string;
@@ -9,14 +11,13 @@ type ProductLookup = {
 
 export const createCustomerLedgerService = (dependencies: {
   getProductsByIds: (productIds: string[]) => Promise<ProductLookup[]>;
-  createDebtEntry: (input: {
+  getCustomerOutstandingBalance?: (customerId: string) => Promise<number>;
+  createDebtWithItems: (input: {
     customerId: string;
     entryDate: string;
     note: string | null;
     totalAmount: number;
-  }) => Promise<{ id: string }>;
-  createDebtItems: (
-    ledgerEntryId: string,
+    idempotencyKey: string;
     items: Array<{
       productId: string;
       productNameSnapshot: string;
@@ -24,19 +25,21 @@ export const createCustomerLedgerService = (dependencies: {
       unitSellingPriceSnapshot: number;
       quantity: number;
       lineTotal: number;
-    }>,
-  ) => Promise<void> | void;
+    }>;
+  }) => Promise<{ id: string }> | { id: string };
   createPaymentEntry: (input: {
     customerId: string;
     entryDate: string;
     paymentAmount: number;
     note: string | null;
-  }) => Promise<void> | void;
+    idempotencyKey: string;
+  }) => Promise<{ id: string }> | { id: string };
 }) => ({
   async createDebt(input: {
     customerId: string;
     entryDate: string;
     note: string | null;
+    idempotencyKey: string;
     items: Array<{
       productId: string;
       quantity: number;
@@ -58,16 +61,19 @@ export const createCustomerLedgerService = (dependencies: {
       })),
     );
 
-    const ledgerEntry = await dependencies.createDebtEntry({
+    const created = await dependencies.createDebtWithItems({
       customerId: input.customerId,
       entryDate: input.entryDate,
       note: input.note,
       totalAmount: snapshot.totalAmount,
+      idempotencyKey: input.idempotencyKey,
+      items: snapshot.items,
     });
 
-    await dependencies.createDebtItems(ledgerEntry.id, snapshot.items);
-
-    return snapshot;
+    return {
+      ...snapshot,
+      id: created.id,
+    };
   },
 
   async createPayment(input: {
@@ -75,7 +81,22 @@ export const createCustomerLedgerService = (dependencies: {
     entryDate: string;
     paymentAmount: number;
     note: string | null;
+    idempotencyKey: string;
   }) {
-    await dependencies.createPaymentEntry(input);
+    if (dependencies.getCustomerOutstandingBalance) {
+      const outstanding = await dependencies.getCustomerOutstandingBalance(
+        input.customerId,
+      );
+
+      if (parseMoney(input.paymentAmount) > parseMoney(outstanding)) {
+        throw new PaymentExceedsBalanceError();
+      }
+    }
+
+    const created = await dependencies.createPaymentEntry(input);
+
+    return {
+      id: created.id,
+    };
   },
 });

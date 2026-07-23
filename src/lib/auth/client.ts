@@ -10,6 +10,7 @@ export const getAuthToken = async () => {
   const response = await fetch(buildAuthUrl("/get-session"), {
     credentials: "include",
     method: "GET",
+    cache: "no-store",
   });
 
   if (!response.ok) {

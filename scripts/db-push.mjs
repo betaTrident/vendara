@@ -8,6 +8,10 @@ if (!databaseUrl) {
   process.exit(1);
 }
 
+console.warn(
+  "db:push applies db/schema.sql directly. Prefer npm run db:migrate for versioned migrations.",
+);
+
 const sql = neon(databaseUrl);
 const schemaSql = await readFile(new URL("../db/schema.sql", import.meta.url), "utf8");
 

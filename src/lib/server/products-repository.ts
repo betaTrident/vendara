@@ -52,6 +52,62 @@ export const createProduct = async (input: {
   return mapProductRow(row);
 };
 
+export const saveProductUpdateWithPriceHistory = async (input: {
+  id: string;
+  next: {
+    name: string;
+    costPrice: number;
+    sellingPrice: number;
+    note: string | null;
+  };
+  priceHistory: {
+    productId: string;
+    oldCostPrice: number;
+    newCostPrice: number;
+    oldSellingPrice: number;
+    newSellingPrice: number;
+  } | null;
+}) => {
+  const sql = getSql();
+
+  const statements = [];
+
+  if (input.priceHistory) {
+    statements.push(sql`
+      insert into price_history (
+        product_id,
+        old_cost_price,
+        new_cost_price,
+        old_selling_price,
+        new_selling_price
+      )
+      values (
+        ${input.priceHistory.productId},
+        ${input.priceHistory.oldCostPrice},
+        ${input.priceHistory.newCostPrice},
+        ${input.priceHistory.oldSellingPrice},
+        ${input.priceHistory.newSellingPrice}
+      )
+    `);
+  }
+
+  statements.push(sql`
+    update products
+    set
+      name = ${input.next.name},
+      cost_price = ${input.next.costPrice},
+      selling_price = ${input.next.sellingPrice},
+      note = ${input.next.note}
+    where id = ${input.id}
+    returning *
+  `);
+
+  const results = await sql.transaction(statements);
+  const productRow = results[results.length - 1][0];
+
+  return mapProductRow(productRow);
+};
+
 export const saveProductUpdate = async (input: {
   id: string;
   next: {

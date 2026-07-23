@@ -4,15 +4,16 @@ import { authClient, getAuthToken } from "@/lib/auth/client";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchAdminJson } from "@/lib/client/api";
+import type { OwnerSummary } from "@/lib/types";
 
 import { AdminLogin } from "./AdminLogin";
 import { CustomerManager } from "./CustomerManager";
 import { ProductManager } from "./ProductManager";
 import { AppTopBar } from "./AppTopBar";
+import { PwaUpdatePrompt } from "./PwaUpdatePrompt";
 import { Package, Users, AlertCircle } from "lucide-react";
-import type { Customer, Product } from "@/lib/types";
+import { usePwaState } from "@/lib/pwa/use-pwa-state";
 
-// ── Stat card components ──────────────────────────────────────────────────────
 interface StatCardProps {
   label: string;
   value: string | number;
@@ -28,7 +29,7 @@ const StatCard = ({
   icon: Icon,
   accent = "default",
 }: StatCardProps) => (
-  <div className="vn-card p-5 flex flex-col justify-between min-h-[120px]">
+  <div className="vn-card p-4 sm:p-5 flex flex-col justify-between min-h-[108px]">
     <div className="flex items-start justify-between gap-3">
       <div className="space-y-1.5 min-w-0">
         <p className="text-[10px] text-muted-text font-semibold uppercase tracking-wider font-sans">
@@ -36,7 +37,7 @@ const StatCard = ({
         </p>
         <div className="flex items-center gap-2">
           <p
-            className={`text-2xl font-semibold tracking-tight tabular-nums leading-none ${
+            className={`text-xl sm:text-2xl font-semibold tracking-tight tabular-nums leading-none ${
               accent === "error" ? "text-destructive" : "text-ink"
             }`}
           >
@@ -52,16 +53,15 @@ const StatCard = ({
           </p>
         )}
       </div>
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-surface-soft text-ink border border-hairline">
-        <Icon className="size-5" />
+      <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-sm bg-surface-soft text-ink border border-hairline">
+        <Icon className="size-4 sm:size-5" />
       </div>
     </div>
   </div>
 );
 
-// ── Skeleton stat card ───────────────────────────────────────────────────────
 const StatCardSkeleton = () => (
-  <div className="vn-card p-5 space-y-4 min-h-[120px]">
+  <div className="vn-card p-4 sm:p-5 space-y-4 min-h-[108px]">
     <div className="flex items-start justify-between gap-3">
       <div className="space-y-3 flex-1">
         <div className="vn-skeleton h-3.5 w-24" />
@@ -73,29 +73,20 @@ const StatCardSkeleton = () => (
   </div>
 );
 
-// ── Tab trigger class ────────────────────────────────────────────────────────
 const TAB_TRIGGER_CLASS =
-  "relative rounded-none px-4 py-3 text-sm font-semibold transition-all text-muted-text hover:text-ink cursor-pointer shadow-none border-b-2 border-transparent " +
+  "relative rounded-none px-3 sm:px-4 py-3 text-sm font-semibold transition-all text-muted-text hover:text-ink cursor-pointer shadow-none border-b-2 border-transparent " +
   "data-[state=active]:text-primary data-[state=active]:border-primary " +
   "focus-visible:outline-none";
 
-// ── AdminConsole ─────────────────────────────────────────────────────────────
 export const AdminConsole = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isCheckingSession, setIsCheckingSession] = useState(true);
-  const [statsData, setStatsData] = useState<{
-    productCount: number;
-    customerCount: number;
-    totalOutstanding: number;
-    settledCount: number;
-    statsLoaded: boolean;
-  }>({
-    productCount: 0,
-    customerCount: 0,
-    totalOutstanding: 0,
-    settledCount: 0,
-    statsLoaded: false,
-  });
+  const [summary, setSummary] = useState<OwnerSummary | null>(null);
+  const [summaryError, setSummaryError] = useState<string | null>(null);
+  const [summaryLoaded, setSummaryLoaded] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [updateDismissed, setUpdateDismissed] = useState(false);
+  const { isOnline, needRefresh, updateServiceWorker } = usePwaState();
 
   const loadSession = async () => {
     setIsCheckingSession(true);
@@ -105,35 +96,36 @@ export const AdminConsole = () => {
 
       if (!token) {
         setIsAuthenticated(false);
+        setSummary(null);
         return;
       }
 
       const data = await fetchAdminJson<{ authenticated: boolean }>("/api/auth/session");
       setIsAuthenticated(data.authenticated);
+
+      if (!data.authenticated) {
+        setSummary(null);
+      }
     } catch {
       setIsAuthenticated(false);
+      setSummary(null);
     } finally {
       setIsCheckingSession(false);
     }
   };
 
-  const loadStats = async () => {
+  const loadSummary = async () => {
+    setSummaryError(null);
+
     try {
-      const [products, customers] = await Promise.all([
-        fetchAdminJson<Product[]>("/api/products"),
-        fetchAdminJson<Customer[]>("/api/customers"),
-      ]);
-      const totalOutstanding = customers.reduce((sum, c) => sum + (c.balance ?? 0), 0);
-      const settledCount = customers.filter((c) => (c.balance ?? 0) === 0).length;
-      setStatsData({
-        productCount: products.length,
-        customerCount: customers.length,
-        totalOutstanding,
-        settledCount,
-        statsLoaded: true,
-      });
-    } catch {
-      setStatsData((prev) => ({ ...prev, statsLoaded: true }));
+      const data = await fetchAdminJson<OwnerSummary>("/api/summary");
+      setSummary(data);
+    } catch (error) {
+      setSummaryError(
+        error instanceof Error ? error.message : "Unable to load overview.",
+      );
+    } finally {
+      setSummaryLoaded(true);
     }
   };
 
@@ -143,38 +135,73 @@ export const AdminConsole = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      void loadStats();
+      void loadSummary();
+    } else {
+      setSummary(null);
+      setSummaryLoaded(false);
     }
   }, [isAuthenticated]);
 
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setHasUnsavedChanges(false);
+      return;
+    }
+
+    const main = document.getElementById("main-content");
+    if (!main) {
+      return;
+    }
+
+    const markDirty = (event: Event) => {
+      const target = event.target;
+      if (
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement
+      ) {
+        setHasUnsavedChanges(true);
+      }
+    };
+
+    main.addEventListener("input", markDirty);
+    main.addEventListener("change", markDirty);
+
+    return () => {
+      main.removeEventListener("input", markDirty);
+      main.removeEventListener("change", markDirty);
+    };
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (isOnline && isAuthenticated) {
+      void loadSummary();
+    }
+  }, [isOnline, isAuthenticated]);
+
   const handleLogout = async () => {
     await authClient.signOut();
+    setSummary(null);
+    setSummaryLoaded(false);
     await loadSession();
   };
 
-  // ── Checking session (full-page skeleton) ──────────────────────────────────
   if (isCheckingSession) {
     return (
       <div className="min-h-dvh bg-background text-ink">
         <AppTopBar isAuthenticated={false} />
-        <main id="main-content" className="mx-auto max-w-7xl px-4 py-8 sm:px-6 space-y-6">
-          <div className="h-12 flex flex-col gap-2">
-            <div className="vn-skeleton h-5 w-48" />
-            <div className="vn-skeleton h-3 w-72" />
-          </div>
+        <main id="main-content" className="mx-auto max-w-7xl px-4 py-6 sm:px-6 space-y-6">
           <div className="grid gap-4 sm:grid-cols-3">
             <StatCardSkeleton />
             <StatCardSkeleton />
             <StatCardSkeleton />
           </div>
-          <div className="vn-skeleton h-10 w-56 rounded-sm" />
           <div className="vn-skeleton h-72 w-full rounded-md" />
         </main>
       </div>
     );
   }
 
-  // ── Not authenticated → show login ─────────────────────────────────────────
   if (!isAuthenticated) {
     return (
       <div className="min-h-dvh bg-background text-ink">
@@ -183,31 +210,56 @@ export const AdminConsole = () => {
     );
   }
 
-  // ── Authenticated console ──────────────────────────────────────────────────
+  const settledCount = summary
+    ? summary.customerCount - summary.customersWithBalanceCount
+    : 0;
+
   return (
-    <div className="min-h-dvh bg-background text-ink">
-      <AppTopBar isAuthenticated={true} onLogout={handleLogout} />
+    <div className="min-h-dvh bg-background text-ink pb-safe">
+      <AppTopBar
+        isAuthenticated={true}
+        isOnline={isOnline}
+        onLogout={handleLogout}
+      />
 
-      <main id="main-content" className="mx-auto max-w-7xl px-4 py-8 sm:px-6 space-y-6">
+      {!isOnline && (
+        <p
+          className="border-b border-hairline bg-surface-soft px-4 py-2 text-center text-xs font-medium text-muted-text"
+          role="status"
+        >
+          Offline — store data and saves need an internet connection.
+        </p>
+      )}
 
-        {/* ── Page header ── */}
+      <main
+        id="main-content"
+        className={`relative mx-auto max-w-7xl px-4 py-6 sm:px-6 space-y-5 sm:space-y-6 ${
+          !isOnline ? "pointer-events-none opacity-80" : ""
+        }`}
+        aria-busy={!isOnline}
+      >
         <header className="space-y-1">
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-semibold tracking-tight text-ink font-heading">
-              Workspace Operations
+            <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-ink font-heading">
+              Vendara
             </h1>
             <Badge className="rounded-full bg-primary/10 text-primary border border-primary/20 text-[10px] px-2.5 py-0.5 font-semibold">
-              Admin
+              Owner
             </Badge>
           </div>
           <p className="text-sm text-muted-text">
-            Manage product catalog, customer accounts, and credit ledgers.
+            Products, customers, and credit ledger in one place.
           </p>
         </header>
 
-        {/* ── KPI stat cards ── */}
-        <div className="grid gap-4 sm:grid-cols-3">
-          {!statsData.statsLoaded ? (
+        {summaryError && (
+          <p className="text-sm text-destructive" role="alert">
+            {summaryError}
+          </p>
+        )}
+
+        <div className="grid gap-3 sm:gap-4 sm:grid-cols-3">
+          {!summaryLoaded || !summary ? (
             <>
               <StatCardSkeleton />
               <StatCardSkeleton />
@@ -216,72 +268,70 @@ export const AdminConsole = () => {
           ) : (
             <>
               <StatCard
-                label="Products in catalog"
-                value={statsData.productCount}
-                sub={statsData.productCount === 1 ? "item tracked" : "items tracked"}
+                label="Active products"
+                value={summary.activeProductCount}
+                sub="in your price list"
                 icon={Package}
               />
               <StatCard
-                label="Customer accounts"
-                value={statsData.customerCount}
-                sub={`${statsData.settledCount} settled · ${statsData.customerCount - statsData.settledCount} outstanding`}
+                label="Customers with balance"
+                value={summary.customersWithBalanceCount}
+                sub={`${settledCount} settled · ${summary.customerCount} total`}
                 icon={Users}
               />
               <StatCard
-                label="Total credit outstanding"
-                value={`₱${statsData.totalOutstanding.toFixed(2)}`}
+                label="Total outstanding"
+                value={`₱${summary.totalOutstanding.toFixed(2)}`}
                 sub={
-                  statsData.totalOutstanding > 0
-                    ? "across active accounts"
+                  summary.totalOutstanding > 0
+                    ? "across customer accounts"
                     : "all accounts settled"
                 }
                 icon={AlertCircle}
-                accent={statsData.totalOutstanding > 0 ? "error" : "default"}
+                accent={summary.totalOutstanding > 0 ? "error" : "default"}
               />
             </>
           )}
         </div>
 
-        {/* ── Tabs ── */}
-        <Tabs defaultValue="products" className="space-y-0">
+        <Tabs defaultValue="customers" className="space-y-0">
           <TabsList
-            className="flex gap-6 border-b border-hairline p-0 rounded-none h-auto w-full justify-start bg-transparent"
+            className="flex gap-4 sm:gap-6 border-b border-hairline p-0 rounded-none h-auto w-full justify-start bg-transparent"
             id="admin-tab-list"
           >
-            <TabsTrigger
-              id="tab-products"
-              value="products"
-              className={TAB_TRIGGER_CLASS}
-            >
-              Products catalog
+            <TabsTrigger id="tab-products" value="products" className={TAB_TRIGGER_CLASS}>
+              Products
             </TabsTrigger>
-            <TabsTrigger
-              id="tab-customers"
-              value="customers"
-              className={TAB_TRIGGER_CLASS}
-            >
-              Customers &amp; ledger
+            <TabsTrigger id="tab-customers" value="customers" className={TAB_TRIGGER_CLASS}>
+              Customers
             </TabsTrigger>
           </TabsList>
 
-          <div className="pt-6">
+          <div className="pt-5 sm:pt-6">
             <TabsContent value="products" className="focus-visible:outline-none mt-0">
               <ProductManager
-                onStatsChange={(count) =>
-                  setStatsData((prev) => ({ ...prev, productCount: count }))
-                }
+                onStatsChange={() => {
+                  void loadSummary();
+                }}
               />
             </TabsContent>
             <TabsContent value="customers" className="focus-visible:outline-none mt-0">
               <CustomerManager
-                onStatsChange={(customerCount, totalOutstanding, settledCount) =>
-                  setStatsData((prev) => ({ ...prev, customerCount, totalOutstanding, settledCount }))
-                }
+                onStatsChange={() => {
+                  void loadSummary();
+                }}
               />
             </TabsContent>
           </div>
         </Tabs>
       </main>
+
+      <PwaUpdatePrompt
+        needRefresh={needRefresh && !updateDismissed}
+        hasUnsavedChanges={hasUnsavedChanges}
+        onDismiss={() => setUpdateDismissed(true)}
+        onUpdate={() => updateServiceWorker(true)}
+      />
     </div>
   );
 };

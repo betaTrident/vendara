@@ -8,14 +8,17 @@ export type ProductRecord = {
 };
 
 export const createProductService = (dependencies: {
-  save: (input: { id: string; next: ProductRecord }) => Promise<unknown> | unknown;
-  savePriceHistory: (input: {
-    productId: string;
-    oldCostPrice: number;
-    newCostPrice: number;
-    oldSellingPrice: number;
-    newSellingPrice: number;
-  }) => Promise<void> | void;
+  saveProductUpdateWithPriceHistory: (input: {
+    id: string;
+    next: ProductRecord;
+    priceHistory: {
+      productId: string;
+      oldCostPrice: number;
+      newCostPrice: number;
+      oldSellingPrice: number;
+      newSellingPrice: number;
+    } | null;
+  }) => Promise<unknown> | unknown;
 }) => ({
   async update(input: {
     id: string;
@@ -33,13 +36,10 @@ export const createProductService = (dependencies: {
       },
     });
 
-    if (priceHistoryRecord) {
-      await dependencies.savePriceHistory(priceHistoryRecord);
-    }
-
-    await dependencies.save({
+    return dependencies.saveProductUpdateWithPriceHistory({
       id: input.id,
       next: input.next,
+      priceHistory: priceHistoryRecord,
     });
   },
 });

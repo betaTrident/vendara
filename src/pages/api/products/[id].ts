@@ -1,46 +1,60 @@
 import type { APIRoute } from "astro";
 import { ZodError } from "zod";
 
-import { jsonError, jsonOk } from "@/lib/api";
-import { requireTrustedAdmin } from "@/lib/auth/admin";
+import {
+  API_ERROR_CODES,
+  jsonError,
+  jsonOk,
+  resolveRequestId,
+} from "@/lib/api";
+import { requireOwnerMutation } from "@/lib/auth/admin";
 import { createProductService } from "@/lib/services/products";
 import {
   deleteProduct,
   getProductById,
-  savePriceHistory,
-  saveProductUpdate,
+  saveProductUpdateWithPriceHistory,
 } from "@/lib/server/products-repository";
-import { productSchema } from "@/lib/validation";
+import { parseRouteUuid, productSchema } from "@/lib/validation";
 
 const productService = createProductService({
-  save: saveProductUpdate,
-  savePriceHistory,
+  saveProductUpdateWithPriceHistory,
 });
 
 export const PUT: APIRoute = async ({ params, request }) => {
-  const admin = await requireTrustedAdmin(request);
+  const owner = await requireOwnerMutation(request);
+  const requestId = resolveRequestId(request);
 
-  if (admin instanceof Response) {
-    return admin;
+  if (owner instanceof Response) {
+    return owner;
   }
 
-  const productId = params.id;
+  const productId = parseRouteUuid(params.id);
 
-  if (!productId) {
-    return jsonError("Missing product ID.");
+  if (!productId.ok) {
+    return jsonError(
+      API_ERROR_CODES.VALIDATION_ERROR,
+      "Product ID must be a valid UUID.",
+      400,
+      { requestId },
+    );
   }
 
-  const previous = await getProductById(productId);
+  const previous = await getProductById(productId.value);
 
   if (!previous) {
-    return jsonError("Product not found.", 404);
+    return jsonError(
+      API_ERROR_CODES.NOT_FOUND,
+      "Product not found.",
+      404,
+      { requestId },
+    );
   }
 
   try {
     const data = productSchema.parse(await request.json());
 
-    await productService.update({
-      id: productId,
+    const updated = await productService.update({
+      id: productId.value,
       previous: {
         name: previous.name,
         costPrice: previous.costPrice,
@@ -55,32 +69,51 @@ export const PUT: APIRoute = async ({ params, request }) => {
       },
     });
 
-    const next = await getProductById(productId);
-
-    return jsonOk(next);
+    return jsonOk(updated, { requestId });
   } catch (error) {
     if (error instanceof ZodError) {
-      return jsonError("Invalid product payload.", 400, error.flatten());
+      return jsonError(
+        API_ERROR_CODES.VALIDATION_ERROR,
+        "Invalid product payload.",
+        400,
+        { requestId, details: error.flatten() },
+      );
     }
 
-    return jsonError("Unable to update product.", 500);
+    return jsonError(
+      API_ERROR_CODES.INTERNAL_ERROR,
+      "Unable to update product.",
+      500,
+      { requestId },
+    );
   }
 };
 
 export const DELETE: APIRoute = async ({ params, request }) => {
-  const admin = await requireTrustedAdmin(request);
+  const owner = await requireOwnerMutation(request);
+  const requestId = resolveRequestId(request);
 
-  if (admin instanceof Response) {
-    return admin;
+  if (owner instanceof Response) {
+    return owner;
   }
 
-  if (!params.id) {
-    return jsonError("Missing product ID.");
+  const productId = parseRouteUuid(params.id);
+
+  if (!productId.ok) {
+    return jsonError(
+      API_ERROR_CODES.VALIDATION_ERROR,
+      "Product ID must be a valid UUID.",
+      400,
+      { requestId },
+    );
   }
 
-  await deleteProduct(params.id);
+  await deleteProduct(productId.value);
 
-  return jsonOk({
-    deleted: true,
-  });
+  return jsonOk(
+    {
+      deleted: true,
+    },
+    { requestId },
+  );
 };

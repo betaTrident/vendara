@@ -1,6 +1,10 @@
 import type { APIRoute } from "astro";
 
-import { jsonError } from "@/lib/api";
+import { API_ERROR_CODES, jsonError } from "@/lib/api";
 
 export const POST: APIRoute = async () =>
-  jsonError("Use Neon Auth from the client application.", 410);
+  jsonError(
+    API_ERROR_CODES.CONFLICT,
+    "Use Neon Auth from the client application.",
+    410,
+  );

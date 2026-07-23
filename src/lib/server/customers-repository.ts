@@ -8,8 +8,8 @@ export const listCustomers = async (search?: string) => {
       ? await sql`
           select
             c.*,
-            coalesce(sum(case when le.entry_type = 'debt' then le.total_amount else 0 end), 0) -
-            coalesce(sum(case when le.entry_type = 'payment' then le.payment_amount else 0 end), 0) as balance
+            coalesce(sum(case when le.voided_at is null and le.entry_type = 'debt' then le.total_amount else 0 end), 0) -
+            coalesce(sum(case when le.voided_at is null and le.entry_type = 'payment' then le.payment_amount else 0 end), 0) as balance
           from customers c
           left join ledger_entries le on le.customer_id = c.id
           where c.is_active = true
@@ -20,8 +20,8 @@ export const listCustomers = async (search?: string) => {
       : await sql`
           select
             c.*,
-            coalesce(sum(case when le.entry_type = 'debt' then le.total_amount else 0 end), 0) -
-            coalesce(sum(case when le.entry_type = 'payment' then le.payment_amount else 0 end), 0) as balance
+            coalesce(sum(case when le.voided_at is null and le.entry_type = 'debt' then le.total_amount else 0 end), 0) -
+            coalesce(sum(case when le.voided_at is null and le.entry_type = 'payment' then le.payment_amount else 0 end), 0) as balance
           from customers c
           left join ledger_entries le on le.customer_id = c.id
           where c.is_active = true
@@ -37,8 +37,8 @@ export const getCustomerById = async (id: string) => {
   const [row] = await sql`
     select
       c.*,
-      coalesce(sum(case when le.entry_type = 'debt' then le.total_amount else 0 end), 0) -
-      coalesce(sum(case when le.entry_type = 'payment' then le.payment_amount else 0 end), 0) as balance
+      coalesce(sum(case when le.voided_at is null and le.entry_type = 'debt' then le.total_amount else 0 end), 0) -
+      coalesce(sum(case when le.voided_at is null and le.entry_type = 'payment' then le.payment_amount else 0 end), 0) as balance
     from customers c
     left join ledger_entries le on le.customer_id = c.id
     where c.id = ${id}
@@ -70,16 +70,21 @@ export const updateCustomer = async (input: {
   note: string | null;
 }) => {
   const sql = getSql();
-  const [row] = await sql`
+  await sql`
     update customers
     set
       name = ${input.name},
       note = ${input.note}
     where id = ${input.id}
-    returning *, 0 as balance
   `;
 
-  return mapCustomerRow(row);
+  const customer = await getCustomerById(input.id);
+
+  if (!customer) {
+    throw new Error("Customer not found after update.");
+  }
+
+  return customer;
 };
 
 export const deleteCustomer = async (id: string) => {

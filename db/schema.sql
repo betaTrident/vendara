@@ -39,6 +39,13 @@ create table if not exists admin_users (
   updated_at timestamp not null default now()
 );
 
+create table if not exists schema_migrations (
+  version text primary key,
+  name text not null,
+  checksum text not null,
+  applied_at timestamp not null default now()
+);
+
 create table if not exists ledger_entries (
   id uuid primary key default gen_random_uuid(),
   customer_id uuid not null references customers(id) on delete cascade,
@@ -47,8 +54,28 @@ create table if not exists ledger_entries (
   total_amount numeric(10,2) check (total_amount is null or total_amount >= 0),
   note varchar(255),
   entry_date date not null,
+  idempotency_key uuid,
+  voided_at timestamp,
+  voided_by varchar(320),
+  void_reason varchar(500),
   created_at timestamp not null default now(),
-  updated_at timestamp not null default now()
+  updated_at timestamp not null default now(),
+  constraint ledger_entries_debt_shape check (
+    entry_type <> 'debt'
+    or (
+      payment_amount is null
+      and total_amount is not null
+      and total_amount >= 0
+    )
+  ),
+  constraint ledger_entries_payment_shape check (
+    entry_type <> 'payment'
+    or (
+      payment_amount is not null
+      and payment_amount > 0
+      and total_amount is null
+    )
+  )
 );
 
 create table if not exists ledger_entry_items (
@@ -71,6 +98,14 @@ create index if not exists idx_customers_name on customers(name);
 create index if not exists idx_customers_name_trgm on customers using gin (name gin_trgm_ops);
 create index if not exists idx_ledger_entries_customer_id on ledger_entries(customer_id);
 create index if not exists idx_ledger_entries_entry_date on ledger_entries(entry_date desc);
+create unique index if not exists idx_ledger_entries_idempotency_key
+  on ledger_entries (idempotency_key)
+  where idempotency_key is not null;
+create index if not exists idx_ledger_entries_customer_timeline
+  on ledger_entries (customer_id, entry_date desc, created_at desc);
+create index if not exists idx_ledger_entries_voided_at
+  on ledger_entries (voided_at)
+  where voided_at is not null;
 create index if not exists idx_ledger_entry_items_ledger_entry_id on ledger_entry_items(ledger_entry_id);
 
 create or replace function set_updated_at()

@@ -4,7 +4,7 @@ import { Plus, Trash2, Calendar, ShoppingBag, CreditCard, User, RefreshCw, Chevr
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { fetchAdminJson } from "@/lib/client/api";
+import { fetchAdminJson, createIdempotencyKey } from "@/lib/client/api";
 import type { Customer, LedgerEntry, Product } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
@@ -39,6 +39,16 @@ export const CustomerLedgerPanel = ({
   );
   const [debtRows, setDebtRows] = useState([emptyDebtRow]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [debtIdempotencyKey, setDebtIdempotencyKey] = useState(() =>
+    createIdempotencyKey(),
+  );
+  const [paymentIdempotencyKey, setPaymentIdempotencyKey] = useState(() =>
+    createIdempotencyKey(),
+  );
+  const [showVoided, setShowVoided] = useState(false);
+  const [voidingEntryId, setVoidingEntryId] = useState<string | null>(null);
+  const [voidReason, setVoidReason] = useState("");
 
   // Accordion state
   const [isPurchaseOpen, setIsPurchaseOpen] = useState(false);
@@ -51,7 +61,10 @@ export const CustomerLedgerPanel = ({
     }
 
     try {
-      const data = await fetchAdminJson<LedgerEntry[]>(`/api/customers/${customer.id}/ledger`);
+      const query = showVoided ? "?includeVoided=1" : "";
+      const data = await fetchAdminJson<LedgerEntry[]>(
+        `/api/customers/${customer.id}/ledger${query}`,
+      );
       setLedger(data);
     } catch {
       setLedger([]);
@@ -62,7 +75,8 @@ export const CustomerLedgerPanel = ({
     void loadLedger();
     setIsPurchaseOpen(false);
     setIsPaymentOpen(false);
-  }, [customer?.id]);
+    setSubmitError(null);
+  }, [customer?.id, showVoided]);
 
   const debtSubtotal = useMemo(() => {
     return debtRows.reduce((sum, row) => {
@@ -77,6 +91,10 @@ export const CustomerLedgerPanel = ({
     let totalDebits = 0;
     let totalPayments = 0;
     for (const entry of ledger) {
+      if (entry.voidedAt) {
+        continue;
+      }
+
       if (entry.entryType === "payment") {
         totalPayments += entry.paymentAmount ?? 0;
       } else {
@@ -105,9 +123,11 @@ export const CustomerLedgerPanel = ({
     if (validRows.length === 0) return;
 
     setIsSubmitting(true);
+    setSubmitError(null);
     try {
       await fetchAdminJson(`/api/customers/${customer.id}/ledger/debt`, {
         method: "POST",
+        idempotencyKey: debtIdempotencyKey,
         body: JSON.stringify({
           entryDate,
           note: debtNote || null,
@@ -120,9 +140,14 @@ export const CustomerLedgerPanel = ({
 
       setDebtRows([emptyDebtRow]);
       setDebtNote("");
+      setDebtIdempotencyKey(createIdempotencyKey());
       setIsPurchaseOpen(false);
       await loadLedger();
       await onCustomerMutated();
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error ? error.message : "Unable to post credit purchase.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -133,9 +158,11 @@ export const CustomerLedgerPanel = ({
     if (isNaN(amount) || amount <= 0) return;
 
     setIsSubmitting(true);
+    setSubmitError(null);
     try {
       await fetchAdminJson(`/api/customers/${customer.id}/ledger/payment`, {
         method: "POST",
+        idempotencyKey: paymentIdempotencyKey,
         body: JSON.stringify({
           entryDate,
           paymentAmount: amount,
@@ -145,23 +172,45 @@ export const CustomerLedgerPanel = ({
 
       setPaymentAmount("");
       setPaymentNote("");
+      setPaymentIdempotencyKey(createIdempotencyKey());
       setIsPaymentOpen(false);
       await loadLedger();
       await onCustomerMutated();
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error ? error.message : "Unable to post payment.",
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleDeleteEntry = async (entryId: string) => {
+  const handleVoidEntry = async (entryId: string) => {
+    const reason = voidReason.trim();
+
+    if (reason.length < 3) {
+      setSubmitError("Enter a short correction reason before voiding.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
     try {
-      await fetchAdminJson(`/api/ledger/${entryId}`, {
-        method: "DELETE",
+      await fetchAdminJson(`/api/ledger/${entryId}/void`, {
+        method: "POST",
+        body: JSON.stringify({ reason }),
       });
+      setVoidingEntryId(null);
+      setVoidReason("");
       await loadLedger();
       await onCustomerMutated();
-    } catch {
-      // Keep state in sync
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error ? error.message : "Unable to void entry.",
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -220,6 +269,12 @@ export const CustomerLedgerPanel = ({
       </div>
 
       {/* ── Date Toolbar ── */}
+      {submitError && (
+        <p className="text-sm text-destructive" role="alert">
+          {submitError}
+        </p>
+      )}
+
       <div className="flex items-center gap-3 rounded-sm border border-hairline bg-surface-soft p-3 transition-all">
         <Calendar className="size-4 text-muted-text shrink-0" aria-hidden="true" />
         <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -244,8 +299,12 @@ export const CustomerLedgerPanel = ({
             type="button"
             aria-expanded={isPurchaseOpen}
             onClick={() => {
-              setIsPurchaseOpen(!isPurchaseOpen);
-              if (!isPurchaseOpen) setIsPaymentOpen(false);
+              const nextOpen = !isPurchaseOpen;
+              setIsPurchaseOpen(nextOpen);
+              if (nextOpen) {
+                setDebtIdempotencyKey(createIdempotencyKey());
+                setIsPaymentOpen(false);
+              }
             }}
             className="w-full text-left flex items-center justify-between p-4 bg-white hover:bg-surface-soft transition-colors cursor-pointer select-none outline-none"
           >
@@ -400,8 +459,12 @@ export const CustomerLedgerPanel = ({
             type="button"
             aria-expanded={isPaymentOpen}
             onClick={() => {
-              setIsPaymentOpen(!isPaymentOpen);
-              if (!isPaymentOpen) setIsPurchaseOpen(false);
+              const nextOpen = !isPaymentOpen;
+              setIsPaymentOpen(nextOpen);
+              if (nextOpen) {
+                setPaymentIdempotencyKey(createIdempotencyKey());
+                setIsPurchaseOpen(false);
+              }
             }}
             className="w-full text-left flex items-center justify-between p-4 bg-white hover:bg-surface-soft transition-colors cursor-pointer select-none outline-none"
           >
@@ -474,14 +537,25 @@ export const CustomerLedgerPanel = ({
       {/* ── Ledger History Table ── */}
       <div className="vn-card overflow-hidden">
         <div className="vn-card-header flex items-center justify-between px-5 py-4">
-          <div>
-            <p className="text-sm font-semibold tracking-tight text-ink flex items-center gap-2 font-heading">
-              <RefreshCw className="size-4 text-muted-text" aria-hidden="true" />
-              Ledger history
-            </p>
-            <p className="text-[11px] text-muted-text mt-1 leading-normal">
-              All transactions in chronological order with running balance.
-            </p>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold tracking-tight text-ink flex items-center gap-2 font-heading">
+                <RefreshCw className="size-4 text-muted-text" aria-hidden="true" />
+                Ledger history
+              </p>
+              <p className="text-[11px] text-muted-text mt-1 leading-normal">
+                Newest first. Voided entries stay auditable but do not affect balance.
+              </p>
+            </div>
+            <label className="inline-flex items-center gap-2 text-xs text-muted-text cursor-pointer select-none">
+              <input
+                type="checkbox"
+                className="size-3.5 rounded border-hairline"
+                checked={showVoided}
+                onChange={(event) => setShowVoided(event.target.checked)}
+              />
+              Show voided
+            </label>
           </div>
         </div>
 
@@ -493,7 +567,7 @@ export const CustomerLedgerPanel = ({
                 <TableHead className="text-xs font-semibold py-3 px-5 h-10 text-muted-text text-left">Type</TableHead>
                 <TableHead className="text-xs font-semibold py-3 px-5 h-10 text-muted-text text-left">Details</TableHead>
                 <TableHead className="text-xs font-semibold py-3 px-5 h-10 text-muted-text text-left">Balance</TableHead>
-                <TableHead className="text-xs font-semibold py-3 px-5 h-10 text-right w-16"></TableHead>
+                <TableHead className="text-xs font-semibold py-3 px-5 h-10 text-muted-text text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
 
@@ -508,28 +582,36 @@ export const CustomerLedgerPanel = ({
                 ledger.map((entry, idx) => {
                   const isPayment = entry.entryType === "payment";
                   const isLast = idx === ledger.length - 1;
+                  const isVoided = Boolean(entry.voidedAt);
 
                   return (
                     <TableRow
                       key={entry.id}
                       className={`vn-table-row border-b border-hairline-soft ${
-                        isLast ? "bg-primary/[0.02] font-semibold" : ""
-                      }`}
+                        isLast && !isVoided ? "bg-primary/[0.02] font-semibold" : ""
+                      } ${isVoided ? "opacity-60" : ""}`}
                     >
                       <TableCell className="py-4 px-5 font-mono text-xs text-muted-text whitespace-nowrap tabular-nums">
                         {entry.entryDate}
                       </TableCell>
 
                       <TableCell className="py-4 px-5">
-                        {isPayment ? (
-                          <Badge className="rounded-sm vn-badge-emerald text-[10px] font-semibold px-2 py-0.5 shadow-none">
-                            Payment
-                          </Badge>
-                        ) : (
-                          <Badge className="rounded-sm vn-badge-rose text-[10px] font-semibold px-2 py-0.5 shadow-none">
-                            Purchase
-                          </Badge>
-                        )}
+                        <div className="flex flex-wrap items-center gap-2">
+                          {isPayment ? (
+                            <Badge className="rounded-sm vn-badge-emerald text-[10px] font-semibold px-2 py-0.5 shadow-none">
+                              Payment
+                            </Badge>
+                          ) : (
+                            <Badge className="rounded-sm vn-badge-rose text-[10px] font-semibold px-2 py-0.5 shadow-none">
+                              Purchase
+                            </Badge>
+                          )}
+                          {isVoided ? (
+                            <Badge className="rounded-sm bg-muted text-[10px] font-semibold px-2 py-0.5 shadow-none">
+                              Voided
+                            </Badge>
+                          ) : null}
+                        </div>
                       </TableCell>
 
                       <TableCell className="py-4 px-5 max-w-[240px]">
@@ -573,21 +655,63 @@ export const CustomerLedgerPanel = ({
                       </TableCell>
 
                       <TableCell className={`py-4 px-5 font-mono text-xs tabular-nums ${
-                        isLast ? "font-bold text-ink text-sm" : "font-semibold text-muted-text"
+                        isLast && !isVoided ? "font-bold text-ink text-sm" : "font-semibold text-muted-text"
                       }`}>
-                        ₱{(entry.runningBalance ?? 0).toFixed(2)}
+                        {isVoided ? "—" : `₱${(entry.runningBalance ?? 0).toFixed(2)}`}
                       </TableCell>
-
-                      <TableCell className="py-4 px-5 text-right">
-                        <button
-                          id={`delete-entry-${entry.id}`}
-                          onClick={() => void handleDeleteEntry(entry.id)}
-                          className="inline-flex h-7 w-7 items-center justify-center bg-rose-50 border border-transparent hover:border-destructive/20 text-destructive hover:bg-rose-100 rounded-sm transition-all duration-200 cursor-pointer focus-visible:outline-none active:scale-90"
-                          title="Delete entry"
-                          aria-label="Delete entry"
-                        >
-                          <Trash2 className="size-3.5" aria-hidden="true" />
-                        </button>
+                      <TableCell className="py-4 px-5 text-right align-top">
+                        {!isVoided ? (
+                          voidingEntryId === entry.id ? (
+                            <div className="space-y-2 max-w-xs ml-auto">
+                              <Input
+                                value={voidReason}
+                                onChange={(event) => setVoidReason(event.target.value)}
+                                placeholder="Correction reason"
+                                className="h-8 text-xs"
+                                aria-label="Void reason"
+                              />
+                              <div className="flex gap-2 justify-end">
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-7 text-xs"
+                                  onClick={() => {
+                                    setVoidingEntryId(null);
+                                    setVoidReason("");
+                                  }}
+                                >
+                                  Cancel
+                                </Button>
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  className="h-7 text-xs"
+                                  disabled={isSubmitting}
+                                  onClick={() => void handleVoidEntry(entry.id)}
+                                >
+                                  Confirm void
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="outline"
+                              className="h-7 text-xs"
+                              disabled={isSubmitting}
+                              onClick={() => {
+                                setVoidingEntryId(entry.id);
+                                setVoidReason("");
+                              }}
+                            >
+                              Void
+                            </Button>
+                          )
+                        ) : (
+                          <span className="text-[10px] text-muted-text">No balance impact</span>
+                        )}
                       </TableCell>
                     </TableRow>
                   );
