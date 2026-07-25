@@ -1,0 +1,29 @@
+---
+import { LANDING_STEPS } from "../../lib/marketing/landing-content";
+---
+
+<section class="workflow" id="how-it-works">
+  <div class="wrap workflow-layout">
+    <div class="workflow-copy">
+      <p class="section-kicker">A simple routine</p>
+      <h2>Less backtracking at the end of the day.</h2>
+      <p>
+        Keep day-to-day updates close to the real work: set the price, record the transaction,
+        then review the account when a customer pays.
+      </p>
+    </div>
+    <div class="step-list">
+      {
+        LANDING_STEPS.map((step) => (
+          <article class="step">
+            <span class="step-index">{step.index}</span>
+            <div>
+              <h3>{step.title}</h3>
+              <p>{step.body}</p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

@@ -11,12 +11,14 @@ test.describe("customer ledger", () => {
     await page.getByLabel(/email/i).fill(ownerEmail!);
     await page.getByLabel(/password/i).fill(ownerPassword!);
     await page.getByRole("button", { name: /sign in/i }).click();
+    await page.waitForURL(/\/admin\/overview/);
   });
 
-  test("defaults to the customers work area", async ({ page }) => {
-    await expect(page.getByRole("tab", { name: "Customers" })).toHaveAttribute(
-      "data-state",
-      "active",
-    );
+  test("can open the customers work area from overview", async ({ page }) => {
+    await page.getByRole("button", { name: "Manage customers" }).click();
+    await expect(page).toHaveURL(/\/admin\/customers/);
+    await expect(
+      page.locator('[data-nav-id="customers"][data-active="true"]').first(),
+    ).toBeVisible();
   });
 });

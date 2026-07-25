@@ -1,0 +1,47 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import { LANDING_CTAS, LANDING_HERO } from "../../lib/marketing/landing-content";
+
+type Props = {
+  preview: ImageMetadata;
+};
+
+const { preview } = Astro.props;
+---
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <span class="eyebrow"><i></i>{LANDING_HERO.eyebrow}</span>
+      <h1>
+        {LANDING_HERO.headlinePrimary}
+        <strong>{LANDING_HERO.headlineAccent}</strong>
+      </h1>
+      <p>{LANDING_HERO.supporting}</p>
+      <div class="hero-actions">
+        <button class="button primary" type="button" data-access-trigger>
+          {LANDING_HERO.primaryCta}
+          <span aria-hidden="true">→</span>
+        </button>
+        <a class="button" href={LANDING_CTAS.viewScreens}>
+          {LANDING_HERO.secondaryCta}
+          <span aria-hidden="true">↓</span>
+        </a>
+      </div>
+      <div class="proof">
+        <span><b aria-hidden="true">✓</b>Approved administrators only</span>
+        <span><b aria-hidden="true">✓</b>Products, customers &amp; ledgers</span>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="live-chip"><i></i> Store workspace</div>
+      <div class="dashboard-frame">
+        <Image src={preview} alt="Vendara overview dashboard" priority />
+      </div>
+      <div class="phone" aria-hidden="true">
+        <Image src={preview} alt="" loading="lazy" />
+      </div>
+    </div>
+  </div>
+</section>

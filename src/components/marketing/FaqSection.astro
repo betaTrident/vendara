@@ -1,0 +1,37 @@
+---
+import { LANDING_FAQS } from "../../lib/marketing/landing-content";
+---
+
+<section class="faq" id="faq">
+  <div class="wrap faq-layout">
+    <div class="faq-copy">
+      <p class="section-kicker">Questions, answered</p>
+      <h2>Good to know before you request access.</h2>
+      <p>
+        Vendara is intentionally a private store administration tool. Here is what that means in
+        practice.
+      </p>
+    </div>
+    <div class="faq-list">
+      {
+        LANDING_FAQS.map((faq, index) => (
+          <article class="faq-item">
+            <button
+              class="faq-button"
+              type="button"
+              aria-expanded="false"
+              aria-controls={`faq-${index}`}
+              data-faq-button
+            >
+              <span>{faq.question}</span>
+              <span aria-hidden="true">+</span>
+            </button>
+            <p class="faq-answer" id={`faq-${index}`} hidden>
+              {faq.answer}
+            </p>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

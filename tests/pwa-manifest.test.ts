@@ -15,8 +15,8 @@ describe("PWA manifest", () => {
       scope: "/",
       display: "standalone",
       lang: "en-PH",
-      theme_color: "#ff385c",
-      background_color: "#f7f7f7",
+      theme_color: "#2563ff",
+      background_color: "#f7f9fc",
     });
     expect(VENDARA_PWA_MANIFEST.icons.length).toBeGreaterThanOrEqual(3);
   });

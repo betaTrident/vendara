@@ -1,0 +1,58 @@
+---
+import { LANDING_CTAS, LANDING_NAV } from "../../lib/marketing/landing-content";
+import { LandingThemeControls } from "./LandingThemeControls";
+
+const lightWordmark = "/brand/vendara-wordmark-light.svg";
+const darkWordmark = "/brand/vendara-wordmark-dark.svg";
+---
+
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="/" aria-label="Vendara home">
+      <img
+        class="brand-mark brand-mark-light"
+        src={lightWordmark}
+        width="160"
+        height="40"
+        alt="Vendara — Sari-sari Store Admin"
+        decoding="async"
+        fetchpriority="high"
+      />
+      <img
+        class="brand-mark brand-mark-dark"
+        src={darkWordmark}
+        width="160"
+        height="40"
+        alt=""
+        decoding="async"
+        aria-hidden="true"
+      />
+    </a>
+    <button
+      class="menu-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="primary-nav"
+      data-menu-toggle
+    >
+      <span aria-hidden="true">☰</span>
+      <span class="sr-only">Menu</span>
+    </button>
+    <ul class="nav-links" id="primary-nav" data-nav-links>
+      {
+        LANDING_NAV.map((item) => (
+          <li>
+            <a href={item.href}>{item.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="nav-actions">
+      <LandingThemeControls client:load />
+      <a class="button" href={LANDING_CTAS.adminSignIn}>Admin sign in</a>
+      <button class="button primary" type="button" data-access-trigger>
+        Request access
+      </button>
+    </div>
+  </div>
+</header>

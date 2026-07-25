@@ -58,9 +58,38 @@ export type LedgerEntry = {
   runningBalance?: number;
 };
 
+export type OverviewActivityKind =
+  | "payment"
+  | "purchase"
+  | "price_change"
+  | "customer_created";
+
+export type OverviewActivityItem = {
+  id: string;
+  kind: OverviewActivityKind;
+  title: string;
+  detail: string;
+  occurredAt: string;
+};
+
+export type OverviewBalanceItem = {
+  customerId: string;
+  customerName: string;
+  balance: number;
+};
+
+export type OverviewAgingBucket = {
+  id: "current" | "late-1-7" | "late-8-30" | "late-30-plus";
+  label: string;
+  customerCount: number;
+};
+
 export type OwnerSummary = {
   activeProductCount: number;
   customerCount: number;
   customersWithBalanceCount: number;
   totalOutstanding: number;
+  recentActivity: OverviewActivityItem[];
+  topBalances: OverviewBalanceItem[];
+  agingBuckets: OverviewAgingBucket[];
 };

@@ -1,32 +1,14 @@
 import { LogOut, ShieldCheck } from "lucide-react";
 
 import { ConnectionStatus } from "@/components/app/ConnectionStatus";
+import { VendaraLogo } from "@/components/app/branding/VendaraLogo";
+import { ThemeMenu } from "@/components/app/theme/ThemeMenu";
 
 interface AppTopBarProps {
   isAuthenticated?: boolean;
   isOnline?: boolean;
   onLogout?: () => void;
 }
-
-const VendaraLogo = () => (
-  <svg
-    width="28"
-    height="28"
-    viewBox="0 0 28 28"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    aria-hidden="true"
-  >
-    <rect width="28" height="28" rx="6" fill="#ff385c" />
-    <path
-      d="M7 8L11.5 20L14 14.5L16.5 20L21 8"
-      stroke="white"
-      strokeWidth="2.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
 
 export const AppTopBar = ({
   isAuthenticated,
@@ -35,41 +17,29 @@ export const AppTopBar = ({
 }: AppTopBarProps) => {
   return (
     <header
-      className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-hairline-soft transition-all duration-300"
+      className="sticky top-0 z-50 w-full bg-card/90 backdrop-blur-md border-b border-hairline-soft transition-all duration-300"
       style={{
         height: "56px",
       }}
     >
       <div className="mx-auto max-w-7xl h-full flex items-center justify-between px-4 sm:px-6">
-
-        {/* Left — Brand */}
         <a
           href="/admin"
-          className="flex items-center gap-2.5 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 rounded-lg p-1 transition-all"
-          aria-label="Vendara home"
+          className="flex items-center gap-2.5 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg p-1 transition-all"
+          aria-label="Vendara overview"
         >
-          <VendaraLogo />
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold tracking-[-0.32px] text-ink group-hover:text-primary transition-colors leading-none">
-              Vendara
-            </span>
-            {isAuthenticated && (
-              <span className="text-[10px] font-semibold text-muted-text leading-none mt-1 tracking-wide uppercase font-sans">
-                Store workspace
-              </span>
-            )}
-          </div>
+          <VendaraLogo variant="horizontal" className="h-7 max-w-[132px]" />
         </a>
 
-        {/* Right — Auth Actions */}
         <div className="flex items-center gap-2">
+          <ThemeMenu />
           {isAuthenticated ? (
             <div className="flex items-center gap-3 sm:gap-4">
               <ConnectionStatus isOnline={isOnline} />
               <button
                 id="topbar-signout-btn"
                 onClick={onLogout}
-                className="inline-flex h-8 items-center gap-1.5 rounded-sm border border-hairline bg-white px-3 text-xs font-medium text-ink hover:bg-surface-soft hover:border-ink transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 cursor-pointer"
+                className="inline-flex h-8 items-center gap-1.5 rounded-sm border border-hairline bg-card px-3 text-xs font-medium text-ink hover:bg-surface-soft hover:border-ink transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
               >
                 <LogOut className="size-3.5 shrink-0" />
                 <span>Sign out</span>
@@ -79,7 +49,7 @@ export const AppTopBar = ({
             <a
               id="topbar-admin-signin-link"
               href="/admin"
-              className="inline-flex h-8 items-center gap-1.5 rounded-sm bg-primary px-4 text-xs font-semibold text-white hover:bg-primary-hover active:scale-95 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 cursor-pointer"
+              className="inline-flex h-8 items-center gap-1.5 rounded-sm bg-primary px-4 text-xs font-semibold text-primary-foreground hover:opacity-90 active:scale-95 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
             >
               <ShieldCheck className="size-3.5 shrink-0" />
               <span>Admin sign in</span>

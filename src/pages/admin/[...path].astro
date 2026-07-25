@@ -1,0 +1,17 @@
+---
+import { AdminConsole } from "@/components/app/AdminConsole";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { parseAdminLocation, titleForAdminRoute } from "@/lib/admin/routes";
+
+const pathSuffix = Astro.params.path ?? "";
+const initialPath = pathSuffix ? `/admin/${pathSuffix}` : "/admin";
+const route = parseAdminLocation(initialPath, Astro.url.search);
+const title = titleForAdminRoute(route);
+---
+
+<BaseLayout
+  title={title}
+  description="Manage products, customer credit accounts, and transaction ledgers."
+>
+  <AdminConsole client:load initialPath={initialPath} />
+</BaseLayout>

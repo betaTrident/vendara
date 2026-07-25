@@ -1,0 +1,45 @@
+---
+import { LANDING_CTAS } from "../../lib/marketing/landing-content";
+---
+
+<div class="modal-backdrop" hidden data-access-modal>
+  <section
+    class="modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="access-title"
+    aria-describedby="access-copy"
+  >
+    <div class="modal-top">
+      <div>
+        <h2 id="access-title">Request Vendara access</h2>
+        <p id="access-copy">
+          Vendara is a private workspace, so access is approved by the store owner or account
+          manager. There is no public signup form on this page.
+        </p>
+      </div>
+      <button
+        class="modal-close"
+        type="button"
+        aria-label="Close access dialog"
+        data-access-close
+      >
+        ×
+      </button>
+    </div>
+    <div class="modal-steps">
+      <div class="modal-step">
+        <b>1</b>
+        <span>Ask your store owner or account manager to approve the email you will use.</span>
+      </div>
+      <div class="modal-step">
+        <b>2</b>
+        <span>Once approved, use the Admin sign in page to access the workspace.</span>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <a class="button primary" href={LANDING_CTAS.adminSignIn}>Open admin sign in</a>
+      <button class="button" type="button" data-access-close>Close</button>
+    </div>
+  </section>
+</div>

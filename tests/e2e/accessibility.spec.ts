@@ -8,5 +8,8 @@ test.describe("accessibility", () => {
     await page.goto("/admin");
     await expect(page.locator("#main-content")).toBeVisible();
     await expect(page.getByRole("link", { name: /skip to content/i })).toBeAttached();
+
+    await page.goto("/admin/overview");
+    await expect(page.locator("#main-content")).toBeVisible();
   });
 });

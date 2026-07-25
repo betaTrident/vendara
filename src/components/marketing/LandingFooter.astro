@@ -1,0 +1,64 @@
+---
+import { LANDING_CTAS, LANDING_NAV } from "../../lib/marketing/landing-content";
+
+const lightWordmark = "/brand/vendara-wordmark-light.svg";
+const darkWordmark = "/brand/vendara-wordmark-dark.svg";
+---
+
+<footer>
+  <div class="wrap footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="/" aria-label="Vendara home">
+        <img
+          class="brand-mark brand-mark-light"
+          src={lightWordmark}
+          width="140"
+          height="36"
+          alt="Vendara"
+          decoding="async"
+          loading="lazy"
+        />
+        <img
+          class="brand-mark brand-mark-dark"
+          src={darkWordmark}
+          width="140"
+          height="36"
+          alt=""
+          decoding="async"
+          loading="lazy"
+          aria-hidden="true"
+        />
+      </a>
+      <p>Private store administration for products, customer accounts, and ledgers.</p>
+    </div>
+    <div>
+      <h3>Explore</h3>
+      <ul>
+        {
+          LANDING_NAV.slice(0, 3).map((item) => (
+            <li>
+              <a href={item.href}>{item.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div>
+      <h3>Help</h3>
+      <ul>
+        <li><a href={LANDING_CTAS.faq}>FAQ</a></li>
+        <li><a href={LANDING_CTAS.pwa}>Install the app</a></li>
+      </ul>
+    </div>
+    <div>
+      <h3>Access</h3>
+      <ul>
+        <li><a href={LANDING_CTAS.adminSignIn}>Admin sign in</a></li>
+        <li>
+          <button type="button" class="footer-button" data-access-trigger>Request access</button>
+        </li>
+      </ul>
+    </div>
+    <p class="copyright">© {new Date().getFullYear()} Vendara. Private store administration.</p>
+  </div>
+</footer>

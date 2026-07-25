@@ -1,0 +1,30 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import { LANDING_PWA } from "../../lib/marketing/landing-content";
+
+type Props = {
+  preview: ImageMetadata;
+};
+
+const { preview } = Astro.props;
+---
+
+<section class="pwa" id="pwa">
+  <div class="wrap pwa-panel">
+    <div class="pwa-visual">
+      <div class="phone" aria-hidden="true">
+        <Image src={preview} alt="" loading="lazy" />
+      </div>
+    </div>
+    <div class="pwa-copy">
+      <h2>{LANDING_PWA.title}</h2>
+      <p>{LANDING_PWA.body}</p>
+    </div>
+    <div class="pwa-status">
+      <strong>{LANDING_PWA.statusTitle}</strong>
+      <p data-install-message>{LANDING_PWA.statusDefault}</p>
+      <button class="button" type="button" data-install-button hidden>Install app</button>
+    </div>
+  </div>
+</section>

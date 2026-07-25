@@ -158,16 +158,55 @@ export const savePriceHistory = async (input: {
   `;
 };
 
-export const listPriceHistory = async (productId: string) => {
+export const listPriceHistory = async (
+  productId: string,
+  options: {
+    since?: Date | null;
+    limit?: number;
+    offset?: number;
+  } = {},
+) => {
   const sql = getSql();
-  const rows = await sql`
-    select *
-    from price_history
-    where product_id = ${productId}
-    order by changed_at desc
-  `;
+  const limit = options.limit ?? 50;
+  const offset = options.offset ?? 0;
+  const since = options.since ?? null;
 
-  return rows.map(mapPriceHistoryRow);
+  const countRows = since
+    ? await sql`
+        select count(*)::int as total
+        from price_history
+        where product_id = ${productId}
+          and changed_at >= ${since.toISOString()}
+      `
+    : await sql`
+        select count(*)::int as total
+        from price_history
+        where product_id = ${productId}
+      `;
+
+  const rows = since
+    ? await sql`
+        select *
+        from price_history
+        where product_id = ${productId}
+          and changed_at >= ${since.toISOString()}
+        order by changed_at desc
+        limit ${limit}
+        offset ${offset}
+      `
+    : await sql`
+        select *
+        from price_history
+        where product_id = ${productId}
+        order by changed_at desc
+        limit ${limit}
+        offset ${offset}
+      `;
+
+  return {
+    items: rows.map(mapPriceHistoryRow),
+    total: Number(countRows[0]?.total ?? 0),
+  };
 };
 
 export const deleteProduct = async (id: string) => {

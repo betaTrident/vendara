@@ -1,0 +1,78 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import { LANDING_CTAS, LANDING_SCREENS } from "../../lib/marketing/landing-content";
+
+type Props = {
+  images: {
+    overview: ImageMetadata;
+    customers: ImageMetadata;
+    ledger: ImageMetadata;
+  };
+};
+
+const { images } = Astro.props;
+
+const screens = LANDING_SCREENS.map((screen) => ({
+  ...screen,
+  image: images[screen.key as keyof typeof images],
+}));
+---
+
+<section class="section product-section" id="product">
+  <div class="wrap">
+    <div class="section-heading">
+      <p class="section-kicker">Product tour</p>
+      <h2>See the workspaces before you sign in.</h2>
+      <p>Choose a view to understand how products, customer accounts, and ledger history connect.</p>
+    </div>
+    <div class="product-explorer">
+      <div class="product-tabs" role="tablist" aria-label="Vendara workspace previews">
+        {
+          screens.map((screen) => (
+            <button
+              class="tab"
+              type="button"
+              role="tab"
+              id={`${screen.key}-tab`}
+              aria-controls={`${screen.key}-panel`}
+              aria-selected={screen.key === "overview" ? "true" : "false"}
+              tabindex={screen.key === "overview" ? 0 : -1}
+              data-screen-tab={screen.key}
+            >
+              {screen.title}
+            </button>
+          ))
+        }
+      </div>
+      {
+        screens.map((screen) => (
+          <article
+            class="screen-panel"
+            id={`${screen.key}-panel`}
+            role="tabpanel"
+            aria-labelledby={`${screen.key}-tab`}
+            hidden={screen.key !== "overview"}
+            data-screen-panel={screen.key}
+          >
+            <div class="screen-copy">
+              <span class="screen-label">Vendara {screen.title}</span>
+              <h3>{screen.title} that explains itself.</h3>
+              <p>{screen.body}</p>
+              <a class="button" href={LANDING_CTAS.adminSignIn}>
+                Open admin sign in <span aria-hidden="true">→</span>
+              </a>
+            </div>
+            <div class="screen-image">
+              <Image
+                src={screen.image}
+                alt={screen.alt}
+                loading={screen.key === "overview" ? "eager" : "lazy"}
+              />
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

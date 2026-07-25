@@ -18,8 +18,8 @@ export const VENDARA_PWA_MANIFEST = {
   scope: "/",
   display: "standalone" as const,
   orientation: "any" as const,
-  theme_color: "#ff385c",
-  background_color: "#f7f7f7",
+  theme_color: "#2563ff",
+  background_color: "#f7f9fc",
   lang: "en-PH",
   icons: [
     {
