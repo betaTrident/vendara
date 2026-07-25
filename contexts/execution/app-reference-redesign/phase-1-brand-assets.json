@@ -1,0 +1,27 @@
+{
+  "generatedAt": "2026-07-25T05:08:00.000Z",
+  "sourcesUnchanged": [
+    "src/components/app/assets/logo/light-mode.svg",
+    "src/components/app/assets/logo/darkmode.svg",
+    "src/components/app/assets/logo/light-modee.svg",
+    "src/components/app/assets/logo/Untitled design (2).svg",
+    "src/components/app/assets/logo/Untitled design (3).svg"
+  ],
+  "outputsBytes": {
+    "public/brand/vendara-wordmark-light.svg": 16624,
+    "public/brand/vendara-wordmark-dark.svg": 15332,
+    "public/brand/vendara-mark.svg": 231,
+    "public/brand/vendara-app-icon-192.png": 2763,
+    "public/brand/vendara-app-icon-512.png": 9227
+  },
+  "sourceBytes": {
+    "light-mode.svg": 404736,
+    "darkmode.svg": 328932
+  },
+  "notes": [
+    "Wordmarks trimmed/re-encoded from embedded rasters via sharp (~25x smaller).",
+    "App mark PNGs temporarily reuse existing PWA icons; ribbon-only icon crop deferred pending design export.",
+    "PWA install icons left unchanged until ribbon mark is visually confirmed.",
+    "Canonical light source remains light-mode.svg; light-modee.svg archive-only."
+  ]
+}

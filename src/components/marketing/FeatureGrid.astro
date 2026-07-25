@@ -1,0 +1,27 @@
+---
+import { LANDING_FEATURES } from "../../lib/marketing/landing-content";
+---
+
+<section class="section" id="features">
+  <div class="wrap">
+    <div class="section-heading">
+      <p class="section-kicker">A focused daily workspace</p>
+      <h2>The records a small store needs, without the clutter.</h2>
+      <p>
+        Every part of Vendara follows the actual routine of recording prices, customer credit,
+        and payments—then being able to find the history later.
+      </p>
+    </div>
+    <div class="feature-grid">
+      {
+        LANDING_FEATURES.map((feature) => (
+          <article class="feature-card">
+            <span class="feature-number">{feature.number}</span>
+            <h3>{feature.title}</h3>
+            <p>{feature.body}</p>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

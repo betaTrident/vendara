@@ -1,0 +1,29 @@
+---
+import { LANDING_ASSURANCES } from "../../lib/marketing/landing-content";
+---
+
+<section class="real-use">
+  <div class="wrap real-use-grid">
+    <div>
+      <p class="section-kicker trust-kicker">Designed for internal use</p>
+      <h2>Private administration, with a clear boundary.</h2>
+      <p>
+        Vendara helps the people who run a store keep the operational record organized. It does
+        not publish a catalog, take public orders, or expose customer balances.
+      </p>
+    </div>
+    <div class="assurance-list">
+      {
+        LANDING_ASSURANCES.map((item) => (
+          <div class="assurance">
+            <i>✓</i>
+            <div>
+              <strong>{item.title}</strong>
+              <span>{item.body}</span>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

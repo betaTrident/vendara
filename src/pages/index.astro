@@ -1,4 +1,59 @@
 ---
-// Redirect directly to /admin for the admin-only direction
-return Astro.redirect("/admin");
+import BaseLayout from "../layouts/BaseLayout.astro";
+import AccessModal from "../components/marketing/AccessModal.astro";
+import FeatureGrid from "../components/marketing/FeatureGrid.astro";
+import FaqSection from "../components/marketing/FaqSection.astro";
+import LandingCta from "../components/marketing/LandingCta.astro";
+import LandingFooter from "../components/marketing/LandingFooter.astro";
+import LandingHeader from "../components/marketing/LandingHeader.astro";
+import LandingHero from "../components/marketing/LandingHero.astro";
+import PwaSection from "../components/marketing/PwaSection.astro";
+import ScreenPreviews from "../components/marketing/ScreenPreviews.astro";
+import TrustSection from "../components/marketing/TrustSection.astro";
+import Workflow from "../components/marketing/Workflow.astro";
+import {
+  LANDING_META,
+  buildLandingJsonLd,
+} from "../lib/marketing/landing-content";
+import dashboardImg from "../components/app/assets/pages/dashboard.png";
+import customersImg from "../components/app/assets/pages/customers.png";
+import ledgerImg from "../components/app/assets/pages/ledger.png";
+import "../styles/landing.css";
+
+const siteOrigin = Astro.site?.origin ?? Astro.url.origin;
+const jsonLd = buildLandingJsonLd(siteOrigin);
 ---
+
+<BaseLayout
+  title={LANDING_META.title}
+  description={LANDING_META.description}
+  canonicalPath={LANDING_META.canonicalPath}
+  ogType={LANDING_META.ogType}
+  ogImagePath={LANDING_META.ogImagePath}
+  jsonLd={jsonLd}
+>
+  <div class="landing-page">
+    <LandingHeader />
+    <main id="main-content">
+      <LandingHero preview={dashboardImg} />
+      <FeatureGrid />
+      <Workflow />
+      <ScreenPreviews
+        images={{
+          overview: dashboardImg,
+          customers: customersImg,
+          ledger: ledgerImg,
+        }}
+      />
+      <TrustSection />
+      <PwaSection preview={dashboardImg} />
+      <FaqSection />
+      <LandingCta />
+    </main>
+    <LandingFooter />
+    <AccessModal />
+  </div>
+  <script>
+    import "../components/marketing/landing-interactive.ts";
+  </script>
+</BaseLayout>

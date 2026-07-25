@@ -7,7 +7,7 @@ import {
   jsonOk,
   resolveRequestId,
 } from "@/lib/api";
-import { requireOwnerMutation } from "@/lib/auth/admin";
+import { requireOwner, requireOwnerMutation } from "@/lib/auth/admin";
 import { createProductService } from "@/lib/services/products";
 import {
   deleteProduct,
@@ -19,6 +19,36 @@ import { parseRouteUuid, productSchema } from "@/lib/validation";
 const productService = createProductService({
   saveProductUpdateWithPriceHistory,
 });
+
+export const GET: APIRoute = async ({ params, request }) => {
+  const owner = await requireOwner(request);
+  const requestId = resolveRequestId(request);
+
+  if (owner instanceof Response) {
+    return owner;
+  }
+
+  const productId = parseRouteUuid(params.id);
+
+  if (!productId.ok) {
+    return jsonError(
+      API_ERROR_CODES.VALIDATION_ERROR,
+      "Product ID must be a valid UUID.",
+      400,
+      { requestId },
+    );
+  }
+
+  const product = await getProductById(productId.value);
+
+  if (!product) {
+    return jsonError(API_ERROR_CODES.NOT_FOUND, "Product not found.", 404, {
+      requestId,
+    });
+  }
+
+  return jsonOk(product, { requestId });
+};
 
 export const PUT: APIRoute = async ({ params, request }) => {
   const owner = await requireOwnerMutation(request);

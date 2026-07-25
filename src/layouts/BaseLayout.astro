@@ -2,14 +2,31 @@
 type Props = {
   title: string;
   description?: string;
+  canonicalPath?: string;
+  ogType?: string;
+  ogImagePath?: string;
+  jsonLd?: Record<string, unknown> | null;
 };
 
 import "../styles/global.css";
+import { THEME_BOOTSTRAP_SCRIPT, THEME_COLOR_LIGHT } from "../lib/theme";
 
 const {
   title,
   description = "Vendara keeps sari-sari prices and customer ledgers in one place.",
+  canonicalPath,
+  ogType = "website",
+  ogImagePath,
+  jsonLd = null,
 } = Astro.props;
+
+const siteOrigin = Astro.site?.origin ?? Astro.url.origin;
+const canonicalHref = canonicalPath
+  ? new URL(canonicalPath, siteOrigin).toString()
+  : undefined;
+const ogImageHref = ogImagePath
+  ? new URL(ogImagePath, siteOrigin).toString()
+  : undefined;
 ---
 
 <!doctype html>
@@ -21,11 +38,20 @@ const {
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#ff385c" />
+    <meta name="theme-color" content={THEME_COLOR_LIGHT} />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Vendara" />
+    {canonicalHref ? <link rel="canonical" href={canonicalHref} /> : null}
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={ogType} />
+    {canonicalHref ? <meta property="og:url" content={canonicalHref} /> : null}
+    {ogImageHref ? <meta property="og:image" content={ogImageHref} /> : null}
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon-180x180.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -35,9 +61,18 @@ const {
       rel="stylesheet"
     />
     <title>{title}</title>
+    <script is:inline set:html={THEME_BOOTSTRAP_SCRIPT} />
+    {
+      jsonLd ? (
+        <script
+          type="application/ld+json"
+          set:html={JSON.stringify(jsonLd)}
+        />
+      ) : null
+    }
   </head>
   <body class="pt-safe">
-    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-ia-primary-container focus:text-ia-on-primary focus:px-4 focus:py-2 focus:rounded-md focus:font-semibold focus:outline-none">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-md focus:font-semibold focus:outline-none">
       Skip to content
     </a>
     <slot />
