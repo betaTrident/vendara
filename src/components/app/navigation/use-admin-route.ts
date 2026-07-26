@@ -7,6 +7,10 @@ import {
   titleForAdminRoute,
   type AdminRoute,
 } from "@/lib/admin/routes";
+import {
+  buildLastSafeViewPath,
+  writeLastSafeViewPath,
+} from "@/lib/pwa/last-safe-view";
 
 export interface UseAdminRouteOptions {
   /** Path provided by Astro catch-all / entry page before hydration. */
@@ -108,6 +112,17 @@ export function useAdminRoute({
   useEffect(() => {
     applyDocumentTitle(route);
   }, [route]);
+
+  useEffect(() => {
+    if (!isAuthenticated || typeof window === "undefined") {
+      return;
+    }
+
+    const path = buildLastSafeViewPath(route);
+    if (path) {
+      writeLastSafeViewPath(path);
+    }
+  }, [isAuthenticated, route]);
 
   return {
     route,

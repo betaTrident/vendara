@@ -1,38 +1,11 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import { OfflinePage } from "@/components/app/pages/OfflinePage";
 ---
 
 <BaseLayout
   title="Offline — Vendara"
   description="Vendara needs an internet connection to load store data."
 >
-  <main
-    id="main-content"
-    class="mx-auto flex min-h-dvh max-w-lg flex-col items-center justify-center gap-4 px-6 py-12 text-center"
-  >
-    <div class="vn-card w-full space-y-4 p-6">
-      <h1 class="text-xl font-semibold text-ink">You are offline</h1>
-      <p class="text-sm text-muted-text leading-relaxed">
-        Vendara can stay open, but products, customers, and ledger data need an
-        internet connection. Nothing was saved while offline.
-      </p>
-      <button
-        type="button"
-        id="offline-retry-btn"
-        class="h-10 w-full rounded-sm bg-primary text-sm font-semibold text-white hover:bg-primary-hover"
-      >
-        Try again
-      </button>
-    </div>
-  </main>
-  <script>
-    const retryButton = document.getElementById("offline-retry-btn");
-    retryButton?.addEventListener("click", () => {
-      if (navigator.onLine) {
-        window.location.assign("/admin");
-        return;
-      }
-      window.location.reload();
-    });
-  </script>
+  <OfflinePage client:load />
 </BaseLayout>

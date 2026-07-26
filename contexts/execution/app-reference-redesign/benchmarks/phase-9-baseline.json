@@ -1,0 +1,33 @@
+{
+  "capturedAt": "2026-07-26T15:35:00.000Z",
+  "phase": 9,
+  "build": {
+    "staticTotalKb": 5312.2,
+    "staticFileCount": 40,
+    "largestAssetsKb": [
+      { "name": "ledger.DX3_-CYD.png", "kb": 1432.5 },
+      { "name": "dashboard.D2fGOpCG.png", "kb": 1289.4 },
+      { "name": "customers.ClCuAR62.png", "kb": 1260.6 },
+      { "name": "AdminConsole.D9kwmaBJ.js", "kb": 483.7 },
+      { "name": "client.BS5kv-sT.js", "kb": 178 }
+    ],
+    "notes": [
+      "Landing preview PNGs dominate static weight; excluded from PWA precache via PRECACHE_EXCLUDE_PATTERNS.",
+      "Optimized wordmarks remain on the critical path; multi-megabyte logo sources stay out of precache."
+    ]
+  },
+  "gates": {
+    "typecheck": "pass",
+    "unitTests": "176/176 pass",
+    "integrationTests": "3 pass, 4 skipped (fixture-dependent)",
+    "coverage": {
+      "statements": 91.5,
+      "branches": 82.46,
+      "functions": 96.21,
+      "lines": 91.49,
+      "threshold": 80
+    },
+    "build": "pass",
+    "e2e": "see phase-9-receipt.md"
+  }
+}
