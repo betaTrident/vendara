@@ -27,6 +27,8 @@ describe("PWA manifest", () => {
     expect(astroConfig).toContain("@vite-pwa/astro");
     expect(astroConfig).toContain("VENDARA_PWA_MANIFEST");
     expect(astroConfig).toContain("buildWorkboxRuntimeCaching");
+    expect(astroConfig).toContain("PRECACHE_GLOB_IGNORES");
+    expect(astroConfig).toContain("globIgnores");
   });
 
   it("ships required icon assets", () => {

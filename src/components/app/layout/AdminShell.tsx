@@ -72,6 +72,7 @@ export function AdminShell({
 
           <main
             id="main-content"
+            tabIndex={-1}
             className={cn(
               "relative flex-1 pb-[calc(3.75rem+env(safe-area-inset-bottom))] md:pb-6",
               mainClassName,

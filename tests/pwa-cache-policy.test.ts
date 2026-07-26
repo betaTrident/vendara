@@ -3,7 +3,9 @@ import { describe, expect, it } from "vitest";
 import {
   buildWorkboxRuntimeCaching,
   OFFLINE_PAGE_PATH,
+  PRECACHE_EXCLUDE_PATTERNS,
   PRIVATE_CACHE_URL_PATTERNS,
+  shouldExcludeFromPrecache,
   shouldNeverCacheRequest,
 } from "@/lib/pwa/cache-policy";
 
@@ -95,5 +97,22 @@ describe("PWA cache policy", () => {
           url: new URL("https://vendara.test/_astro/app.js"),
         } as never),
     ).toBe(true);
+  });
+
+  it("excludes large logo sources and reference boards from precache", () => {
+    expect(
+      shouldExcludeFromPrecache(
+        "src/components/app/assets/logo/light-mode.svg",
+      ),
+    ).toBe(true);
+    expect(
+      shouldExcludeFromPrecache(
+        "src/components/app/assets/pages/offline.png",
+      ),
+    ).toBe(true);
+    expect(shouldExcludeFromPrecache("public/icons/icon-192x192.png")).toBe(
+      false,
+    );
+    expect(PRECACHE_EXCLUDE_PATTERNS.length).toBeGreaterThan(0);
   });
 });

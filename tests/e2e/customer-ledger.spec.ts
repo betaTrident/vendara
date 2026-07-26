@@ -21,4 +21,14 @@ test.describe("customer ledger", () => {
       page.locator('[data-nav-id="customers"][data-active="true"]').first(),
     ).toBeVisible();
   });
+
+  test("deep-links to customer ledger route shape", async ({ page }) => {
+    await page.goto("/admin/customers/22222222-2222-4222-8222-222222222222/ledger");
+    await expect(page).toHaveURL(
+      /\/admin\/customers\/22222222-2222-4222-8222-222222222222\/ledger/,
+    );
+    await expect(
+      page.getByRole("heading", { name: "Customer ledger", level: 1 }),
+    ).toBeVisible();
+  });
 });

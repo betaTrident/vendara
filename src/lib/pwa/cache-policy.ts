@@ -7,6 +7,22 @@ export type WorkboxRuntimeCachingRule = {
 /** Paths that must never be stored by the service worker. */
 export const PRIVATE_CACHE_URL_PATTERNS: ReadonlyArray<RegExp> = [/^\/api\//, /\/api\//];
 
+/** Source assets that must not inflate the Workbox precache manifest. */
+export const PRECACHE_EXCLUDE_PATTERNS: ReadonlyArray<RegExp> = [
+  /components\/app\/assets\/logo\//i,
+  /components\/app\/assets\/pages\//i,
+  /light-modee\.svg$/i,
+  /Untitled design/i,
+];
+
+/** Minimatch patterns for Workbox `globIgnores`. */
+export const PRECACHE_GLOB_IGNORES: ReadonlyArray<string> = [
+  "**/components/app/assets/logo/**",
+  "**/components/app/assets/pages/**",
+  "**/*light-modee.svg",
+  "**/Untitled design*.svg",
+];
+
 export const OFFLINE_PAGE_PATH = "/offline";
 
 export const VENDARA_PWA_MANIFEST = {
@@ -55,6 +71,9 @@ export const shouldNeverCacheRequest = (
 
   return PRIVATE_CACHE_URL_PATTERNS.some((pattern) => pattern.test(url));
 };
+
+export const shouldExcludeFromPrecache = (assetPath: string): boolean =>
+  PRECACHE_EXCLUDE_PATTERNS.some((pattern) => pattern.test(assetPath));
 
 export const buildWorkboxRuntimeCaching = (
   neonAuthOrigin?: string,

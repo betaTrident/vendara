@@ -7,16 +7,19 @@ import { usePwaState } from "@/lib/pwa/use-pwa-state";
 
 import { AdminLogin } from "./AdminLogin";
 import { AppTopBar } from "./AppTopBar";
-import { CustomerManager } from "./CustomerManager";
 import { PwaUpdatePrompt } from "./PwaUpdatePrompt";
+import { ReconnectAnnouncement } from "./states/ReconnectAnnouncement";
 import { ThemeProvider } from "./theme/ThemeProvider";
 import { AdminShell } from "./layout/AdminShell";
 import { useAdminRoute } from "./navigation/use-admin-route";
 import { AdminNotFoundPage } from "./pages/AdminNotFoundPage";
+import { CustomerLedgerPage } from "./pages/CustomerLedgerPage";
+import { CustomersPage } from "./pages/CustomersPage";
 import { OverviewPage } from "./pages/OverviewPage";
 import { ProductPriceHistoryPage } from "./pages/ProductPriceHistoryPage";
 import { ProductsPage } from "./pages/ProductsPage";
-import { RoutePlaceholderPage } from "./pages/RoutePlaceholderPage";
+import { RecordPaymentPage } from "./pages/RecordPaymentPage";
+import { RecordPurchasePage } from "./pages/RecordPurchasePage";
 
 interface AdminConsoleProps {
   /** Path from Astro entry or catch-all before client hydration. */
@@ -39,7 +42,8 @@ const AdminConsoleInner = ({ initialPath }: AdminConsoleProps) => {
   const [summaryLoaded, setSummaryLoaded] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [updateDismissed, setUpdateDismissed] = useState(false);
-  const { isOnline, needRefresh, updateServiceWorker } = usePwaState();
+  const { isOnline, needRefresh, reconnected, acknowledgeReconnected, updateServiceWorker } =
+    usePwaState();
   const { route, navigate } = useAdminRoute({
     initialPath,
     isAuthenticated,
@@ -155,7 +159,7 @@ const AdminConsoleInner = ({ initialPath }: AdminConsoleProps) => {
     return (
       <div className="min-h-dvh bg-background text-ink">
         <AppTopBar isAuthenticated={false} />
-        <main id="main-content" className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+        <main id="main-content" tabIndex={-1} className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
           <div className="vn-skeleton h-72 w-full rounded-md" />
         </main>
       </div>
@@ -165,7 +169,7 @@ const AdminConsoleInner = ({ initialPath }: AdminConsoleProps) => {
   if (!isAuthenticated) {
     return (
       <div className="min-h-dvh bg-background text-ink">
-        <main id="main-content">
+        <main id="main-content" tabIndex={-1}>
           <AdminLogin onAuthenticated={loadSession} />
         </main>
       </div>
@@ -196,10 +200,19 @@ const AdminConsoleInner = ({ initialPath }: AdminConsoleProps) => {
         );
       case "customers":
         return (
-          <CustomerManager
+          <CustomersPage
+            initialCustomerId={route.customerId}
+            onNavigate={navigate}
             onStatsChange={() => {
               void loadSummary();
             }}
+          />
+        );
+      case "customer-ledger":
+        return (
+          <CustomerLedgerPage
+            customerId={route.customerId}
+            onNavigate={navigate}
           />
         );
       case "product-price-history":
@@ -209,34 +222,26 @@ const AdminConsoleInner = ({ initialPath }: AdminConsoleProps) => {
             onNavigate={navigate}
           />
         );
-      case "customer-ledger":
-        return (
-          <RoutePlaceholderPage
-            title="Customer ledger"
-            description="Dedicated ledger views arrive in a later phase."
-            onNavigate={navigate}
-            fallbackHref="/admin/customers"
-            fallbackLabel="Back to customers"
-          />
-        );
       case "record-purchase":
         return (
-          <RoutePlaceholderPage
-            title="Record purchase"
-            description="Dedicated purchase flows arrive in a later phase."
+          <RecordPurchasePage
+            initialCustomerId={route.customerId}
+            isOnline={isOnline}
             onNavigate={navigate}
-            fallbackHref="/admin/customers"
-            fallbackLabel="Open customers"
+            onStatsChange={() => {
+              void loadSummary();
+            }}
           />
         );
       case "record-payment":
         return (
-          <RoutePlaceholderPage
-            title="Record payment"
-            description="Dedicated payment flows arrive in a later phase."
+          <RecordPaymentPage
+            initialCustomerId={route.customerId}
+            isOnline={isOnline}
             onNavigate={navigate}
-            fallbackHref="/admin/customers"
-            fallbackLabel="Open customers"
+            onStatsChange={() => {
+              void loadSummary();
+            }}
           />
         );
       case "not-found":
@@ -264,14 +269,21 @@ const AdminConsoleInner = ({ initialPath }: AdminConsoleProps) => {
         }}
         mainClassName={!isOnline ? "pointer-events-none opacity-80" : undefined}
         offlineBanner={
-          !isOnline ? (
-            <p
-              className="border-b border-hairline bg-surface-soft px-4 py-2 text-center text-xs font-medium text-muted-text"
-              role="status"
-            >
-              Offline — store data and saves need an internet connection.
-            </p>
-          ) : null
+          <>
+            <ReconnectAnnouncement
+              visible={reconnected}
+              onDismiss={acknowledgeReconnected}
+            />
+            {!isOnline ? (
+              <p
+                className="border-b border-hairline bg-surface-soft px-4 py-2 text-center text-xs font-medium text-muted-text"
+                role="status"
+                aria-live="polite"
+              >
+                Offline — store data and saves need an internet connection.
+              </p>
+            ) : null}
+          </>
         }
       >
         <div aria-busy={!isOnline}>{renderRoute()}</div>

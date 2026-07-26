@@ -9,6 +9,7 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/app/layout/PageHeader";
+import { PageErrorState } from "@/components/app/states/PageErrorState";
 import {
   formatOverviewDateLabel,
   formatOverviewGreeting,
@@ -245,9 +246,7 @@ export function OverviewPage({
       </div>
 
       {summaryError ? (
-        <p className="text-sm text-destructive" role="alert">
-          {summaryError}
-        </p>
+        <PageErrorState message={summaryError} />
       ) : null}
 
       <div className="grid gap-3 sm:gap-4 sm:grid-cols-3">
