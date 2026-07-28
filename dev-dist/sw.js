@@ -82,7 +82,7 @@ define(['./workbox-1a54a409'], (function (workbox) { 'use strict';
    */
   workbox.precacheAndRoute([{
     "url": "/offline",
-    "revision": "0.bqman5okjtg"
+    "revision": "0.codp4rjvttg"
   }], {
     "directoryIndex": "index.html"
   });

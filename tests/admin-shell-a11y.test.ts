@@ -36,4 +36,19 @@ describe("admin shell accessibility contracts", () => {
     expect(topBar).toContain('aria-label="Notifications unavailable"');
     expect(topBar).toContain("disabled");
   });
+
+  test("keeps the sidebar collapsible at laptop widths", () => {
+    const shell = readFileSync(
+      resolve(process.cwd(), "src/components/app/layout/AdminShell.tsx"),
+      "utf8",
+    );
+    const topBar = readFileSync(
+      resolve(process.cwd(), "src/components/app/layout/AdminTopBar.tsx"),
+      "utf8",
+    );
+
+    expect(shell).toContain('className="hidden xl:block"');
+    expect(topBar).toContain("xl:hidden");
+    expect(topBar).not.toContain("lg:hidden");
+  });
 });

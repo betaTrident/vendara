@@ -1,6 +1,15 @@
-import { readFileSync, copyFileSync, mkdirSync, writeFileSync, statSync } from "node:fs";
-import { resolve } from "node:path";
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
 import { createRequire } from "node:module";
+import { resolve } from "node:path";
+
+const LIGHT_SOURCE = "src/components/app/assets/logo/light-modee.svg";
 
 const require = createRequire(import.meta.url);
 const root = process.cwd();
@@ -9,15 +18,23 @@ mkdirSync(outDir, { recursive: true });
 
 const extractEmbeddedImage = (svgPath) => {
   const svg = readFileSync(svgPath, "utf8");
-  const match = svg.match(
-    /xlink:href="data:image\/(png|jpeg);base64,([^"]+)"|href="data:image\/(png|jpeg);base64,([^"]+)"/,
-  );
-  if (!match) {
+  const matches = [...svg.matchAll(/(?:xlink:href|href)="data:image\/(png|jpeg);base64,([^"]+)"/g)];
+  const embeddedImages = matches.map((match) => ({
+    format: match[1],
+    buffer: Buffer.from(match[2], "base64"),
+  }));
+  const selected = embeddedImages.sort(
+    (left, right) => right.buffer.byteLength - left.buffer.byteLength,
+  )[0];
+
+  if (!selected) {
     throw new Error(`No embedded raster found in ${svgPath}`);
   }
-  const format = match[1] ?? match[3];
-  const b64 = match[2] ?? match[4];
-  return { format, buffer: Buffer.from(b64, "base64"), svg };
+
+  return {
+    ...selected,
+    svg,
+  };
 };
 
 const wrapPngAsSvg = (pngBuffer, width, height) => {
@@ -29,14 +46,15 @@ const wrapPngAsSvg = (pngBuffer, width, height) => {
 };
 
 const optimizeWordmark = async (sourcePath, outName) => {
-  const { buffer } = extractEmbeddedImage(sourcePath);
-  let outBuffer = buffer;
+  const { svg } = extractEmbeddedImage(sourcePath);
+  const outputPath = resolve(outDir, outName);
+  let outBuffer;
   let width = 640;
   let height = 160;
 
   try {
     const sharp = require("sharp");
-    const image = sharp(buffer).trim();
+    const image = sharp(Buffer.from(svg)).trim();
     const meta = await image.metadata();
     const targetWidth = Math.min(meta.width ?? 1280, 960);
     const resized = await image
@@ -46,21 +64,41 @@ const optimizeWordmark = async (sourcePath, outName) => {
     outBuffer = resized.data;
     width = resized.info.width;
     height = resized.info.height;
-  } catch {
-    // sharp unavailable — ship trimmed-as-possible original raster wrapped in SVG
+  } catch (error) {
+    if (!existsSync(outputPath)) {
+      throw new Error(
+        `Unable to optimize ${sourcePath}, and no checked-in derivative exists at ${outputPath}. Install sharp before regenerating brand assets.`,
+        { cause: error },
+      );
+    }
+
+    console.warn(`Reusing the checked-in optimized derivative ${outName}; sharp is unavailable.`);
+    return {
+      outName,
+      bytes: statSync(outputPath).size,
+      width: null,
+      height: null,
+      reusedExisting: true,
+    };
   }
 
-  writeFileSync(resolve(outDir, outName), wrapPngAsSvg(outBuffer, width, height));
+  writeFileSync(outputPath, wrapPngAsSvg(outBuffer, width, height));
   return { outName, bytes: outBuffer.byteLength, width, height };
 };
 
 const main = async () => {
-  const light = resolve(root, "src/components/app/assets/logo/light-mode.svg");
-  const dark = resolve(root, "src/components/app/assets/logo/darkmode.svg");
+  const light = {
+    absolutePath: resolve(root, LIGHT_SOURCE),
+    relativePath: LIGHT_SOURCE,
+  };
+  const dark = {
+    absolutePath: resolve(root, "src/components/app/assets/logo/darkmode.svg"),
+    relativePath: "src/components/app/assets/logo/darkmode.svg",
+  };
 
   const results = [
-    await optimizeWordmark(light, "vendara-wordmark-light.svg"),
-    await optimizeWordmark(dark, "vendara-wordmark-dark.svg"),
+    await optimizeWordmark(light.absolutePath, "vendara-wordmark-light.svg"),
+    await optimizeWordmark(dark.absolutePath, "vendara-wordmark-dark.svg"),
   ];
 
   // Icon derivatives: reuse existing PWA icons until a ribbon-only crop is supplied.
@@ -83,10 +121,7 @@ const main = async () => {
 
   const report = {
     generatedAt: new Date().toISOString(),
-    sourcesUnchanged: [
-      "src/components/app/assets/logo/light-mode.svg",
-      "src/components/app/assets/logo/darkmode.svg",
-    ],
+    sourcesUnchanged: [light.relativePath, dark.relativePath],
     outputs: Object.fromEntries(
       [
         "vendara-wordmark-light.svg",
@@ -99,7 +134,7 @@ const main = async () => {
     wordmarkOptimize: results,
     notes: [
       "Source logo SVGs left untouched.",
-      "Wordmarks re-wrapped from embedded rasters; sharp used when available.",
+      "Wordmarks rendered from the complete source SVG composition; sharp used when available.",
       "App mark PNGs currently reuse existing PWA icons pending ribbon-only export.",
     ],
   };

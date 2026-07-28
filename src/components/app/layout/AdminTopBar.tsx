@@ -1,8 +1,8 @@
-import { LogOut, Menu, Search, Bell } from "lucide-react";
+import { Bell, LogOut, Menu, Search } from "lucide-react";
 
 import { VendaraLogo } from "@/components/app/branding/VendaraLogo";
-import { ThemeMenu } from "@/components/app/theme/ThemeMenu";
 import { ConnectionStatus } from "@/components/app/ConnectionStatus";
+import { ThemeMenu } from "@/components/app/theme/ThemeMenu";
 import { ADMIN_OVERVIEW_PATH } from "@/lib/admin/routes";
 
 interface AdminTopBarProps {
@@ -24,7 +24,7 @@ export function AdminTopBar({
         <button
           type="button"
           onClick={onOpenSidebar}
-          className="inline-flex size-10 items-center justify-center rounded-md border border-hairline bg-card text-ink hover:bg-surface-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:hidden"
+          className="inline-flex size-10 items-center justify-center rounded-md border border-hairline bg-card text-ink hover:bg-surface-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring xl:hidden"
           aria-label="Open navigation"
         >
           <Menu className="size-4" aria-hidden="true" />
@@ -33,7 +33,7 @@ export function AdminTopBar({
 
       <a
         href={ADMIN_OVERVIEW_PATH}
-        className="hidden sm:flex items-center rounded-md p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:hidden"
+        className="hidden items-center rounded-md p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:flex xl:hidden"
         aria-label="Vendara overview"
       >
         <VendaraLogo variant="horizontal" className="h-7 max-w-[132px]" />

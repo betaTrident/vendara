@@ -3,10 +3,13 @@
 import { useEffect, useState } from "react";
 import { FolderOpen, Lightbulb, RefreshCw } from "lucide-react";
 
-import { VendaraLogo } from "@/components/app/branding/VendaraLogo";
 import { OfflineIllustration } from "@/components/app/offline/OfflineIllustration";
 import { OfflineTipsDialog } from "@/components/app/offline/OfflineTipsDialog";
 import { ADMIN_OVERVIEW_PATH } from "@/lib/admin/routes";
+import {
+  BRAND_WORDMARK_DARK_URL,
+  BRAND_WORDMARK_LIGHT_URL,
+} from "@/lib/brand-assets";
 import { readLastSafeViewPath } from "@/lib/pwa/last-safe-view";
 import { OFFLINE_PAGE_COPY } from "@/lib/pwa/offline-guidance";
 import { cn } from "@/lib/utils";
@@ -57,12 +60,34 @@ export function OfflinePageContent() {
             "md:vn-card md:shadow-sm",
           )}
         >
-          <div className="flex justify-center md:hidden">
-            <VendaraLogo
-              variant="horizontal"
-              theme="dark"
-              alt="Vendara"
-              className="h-8 max-w-[148px]"
+          <div className="flex justify-center">
+            <img
+              src={BRAND_WORDMARK_DARK_URL}
+              alt="Vendara — Sari-sari Store Admin"
+              width={160}
+              height={40}
+              decoding="async"
+              className={cn(
+                "h-8 w-auto max-w-[148px] object-contain",
+                "max-md:mix-blend-screen md:hidden",
+              )}
+            />
+            <img
+              src={BRAND_WORDMARK_LIGHT_URL}
+              alt="Vendara — Sari-sari Store Admin"
+              width={160}
+              height={40}
+              decoding="async"
+              className="hidden h-8 w-auto max-w-[148px] object-contain md:block dark:md:hidden"
+            />
+            <img
+              src={BRAND_WORDMARK_DARK_URL}
+              alt=""
+              width={160}
+              height={40}
+              decoding="async"
+              aria-hidden="true"
+              className="hidden h-8 w-auto max-w-[148px] object-contain md:dark:block"
             />
           </div>
 

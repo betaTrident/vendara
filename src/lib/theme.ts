@@ -47,12 +47,15 @@ export const resolveTheme = (
 export const getThemeColorMeta = (resolved: ResolvedTheme): string =>
   resolved === "dark" ? THEME_COLOR_DARK : THEME_COLOR_LIGHT;
 
-export const getWordmarkSrc = (resolved: ResolvedTheme): string =>
-  resolved === "dark"
-    ? "/brand/vendara-wordmark-dark.svg"
-    : "/brand/vendara-wordmark-light.svg";
+import {
+  BRAND_MARK_URL,
+  getBrandWordmarkUrl,
+} from "./brand-assets";
 
-export const getMarkSrc = (): string => "/brand/vendara-mark.svg";
+export const getWordmarkSrc = (resolved: ResolvedTheme): string =>
+  getBrandWordmarkUrl(resolved);
+
+export const getMarkSrc = (): string => BRAND_MARK_URL;
 
 export const readStoredThemePreference = (
   storage: ThemeStorageLike | null | undefined,

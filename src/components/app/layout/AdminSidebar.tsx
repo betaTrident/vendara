@@ -2,8 +2,8 @@ import { VendaraLogo } from "@/components/app/branding/VendaraLogo";
 import { StoreStatusCard } from "@/components/app/layout/StoreStatusCard";
 import {
   ADMIN_SIDEBAR_NAV,
-  isAdminNavItemActive,
   type AdminNavItem,
+  isAdminNavItemActive,
 } from "@/components/app/navigation/admin-navigation";
 import { ADMIN_OVERVIEW_PATH, type AdminRoute } from "@/lib/admin/routes";
 import { cn } from "@/lib/utils";
@@ -46,21 +46,16 @@ function NavButton({
   );
 }
 
-export function AdminSidebar({
-  route,
-  isOnline,
-  onNavigate,
-  className,
-}: AdminSidebarProps) {
+export function AdminSidebar({ route, isOnline, onNavigate, className }: AdminSidebarProps) {
   return (
     <aside
       className={cn(
-        "flex h-full w-[248px] shrink-0 flex-col border-r border-hairline bg-card",
+        "flex h-full w-[248px] shrink-0 flex-col border-r border-hairline bg-card shadow-[8px_0_30px_rgba(15,23,42,0.025)]",
         className,
       )}
       aria-label="Admin navigation"
     >
-      <div className="flex h-14 items-center border-b border-hairline-soft px-4">
+      <div className="flex h-20 items-center border-b border-hairline-soft px-5">
         <a
           href={ADMIN_OVERVIEW_PATH}
           onClick={(event) => {
@@ -70,11 +65,11 @@ export function AdminSidebar({
           className="rounded-md p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           aria-label="Vendara overview"
         >
-          <VendaraLogo variant="horizontal" className="h-7 max-w-[148px]" />
+          <VendaraLogo variant="horizontal" priority className="h-9 max-w-[166px]" />
         </a>
       </div>
 
-      <nav className="flex-1 space-y-1 overflow-y-auto p-3" aria-label="Primary">
+      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-5" aria-label="Primary">
         {ADMIN_SIDEBAR_NAV.map((item) => (
           <NavButton
             key={item.id}

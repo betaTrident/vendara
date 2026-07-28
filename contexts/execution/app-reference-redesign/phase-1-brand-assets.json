@@ -1,27 +1,33 @@
 {
-  "generatedAt": "2026-07-25T05:08:00.000Z",
+  "generatedAt": "2026-07-27T19:44:25.904Z",
   "sourcesUnchanged": [
-    "src/components/app/assets/logo/light-mode.svg",
-    "src/components/app/assets/logo/darkmode.svg",
     "src/components/app/assets/logo/light-modee.svg",
-    "src/components/app/assets/logo/Untitled design (2).svg",
-    "src/components/app/assets/logo/Untitled design (3).svg"
+    "src/components/app/assets/logo/darkmode.svg"
   ],
-  "outputsBytes": {
-    "public/brand/vendara-wordmark-light.svg": 16624,
-    "public/brand/vendara-wordmark-dark.svg": 15332,
-    "public/brand/vendara-mark.svg": 231,
-    "public/brand/vendara-app-icon-192.png": 2763,
-    "public/brand/vendara-app-icon-512.png": 9227
+  "outputs": {
+    "vendara-wordmark-light.svg": 48348,
+    "vendara-wordmark-dark.svg": 50204,
+    "vendara-mark.svg": 231,
+    "vendara-app-icon-192.png": 2763,
+    "vendara-app-icon-512.png": 9227
   },
-  "sourceBytes": {
-    "light-mode.svg": 404736,
-    "darkmode.svg": 328932
-  },
+  "wordmarkOptimize": [
+    {
+      "outName": "vendara-wordmark-light.svg",
+      "bytes": 36088,
+      "width": 960,
+      "height": 234
+    },
+    {
+      "outName": "vendara-wordmark-dark.svg",
+      "bytes": 37482,
+      "width": 960,
+      "height": 230
+    }
+  ],
   "notes": [
-    "Wordmarks trimmed/re-encoded from embedded rasters via sharp (~25x smaller).",
-    "App mark PNGs temporarily reuse existing PWA icons; ribbon-only icon crop deferred pending design export.",
-    "PWA install icons left unchanged until ribbon mark is visually confirmed.",
-    "Canonical light source remains light-mode.svg; light-modee.svg archive-only."
+    "Source logo SVGs left untouched.",
+    "Wordmarks rendered from the complete source SVG composition; sharp used when available.",
+    "App mark PNGs currently reuse existing PWA icons pending ribbon-only export."
   ]
 }

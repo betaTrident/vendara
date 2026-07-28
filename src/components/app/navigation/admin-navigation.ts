@@ -6,22 +6,11 @@ import {
   Package,
   ShoppingBag,
   Users,
-  BookOpen,
 } from "lucide-react";
 
-import {
-  buildAdminHref,
-  type AdminRoute,
-} from "@/lib/admin/routes";
+import { type AdminRoute, buildAdminHref } from "@/lib/admin/routes";
 
-export type AdminNavId =
-  | "overview"
-  | "products"
-  | "customers"
-  | "ledger"
-  | "purchase"
-  | "payment"
-  | "more";
+export type AdminNavId = "overview" | "products" | "customers" | "purchase" | "payment" | "more";
 
 export interface AdminNavItem {
   id: AdminNavId;
@@ -95,30 +84,23 @@ export const ADMIN_MOBILE_PRIMARY_NAV: AdminNavItem[] = [
     match: ["customers"],
   },
   {
-    id: "ledger",
-    label: "Ledger",
-    href: buildAdminHref({ name: "customers" }),
-    icon: BookOpen,
-    match: ["customer-ledger"],
+    id: "purchase",
+    label: "Purchase",
+    href: buildAdminHref({ name: "record-purchase" }),
+    icon: ShoppingBag,
+    match: ["record-purchase"],
   },
   {
     id: "more",
     label: "More",
     href: "#more",
     icon: MoreHorizontal,
-    match: ["record-purchase", "record-payment"],
+    match: ["record-payment"],
     isPanel: true,
   },
 ];
 
 export const ADMIN_MORE_NAV: AdminNavItem[] = [
-  {
-    id: "purchase",
-    label: "Record purchase",
-    href: buildAdminHref({ name: "record-purchase" }),
-    icon: ShoppingBag,
-    match: ["record-purchase"],
-  },
   {
     id: "payment",
     label: "Record payment",
@@ -128,9 +110,6 @@ export const ADMIN_MORE_NAV: AdminNavItem[] = [
   },
 ];
 
-export function isAdminNavItemActive(
-  item: AdminNavItem,
-  route: AdminRoute,
-): boolean {
+export function isAdminNavItemActive(item: AdminNavItem, route: AdminRoute): boolean {
   return item.match.includes(route.name);
 }

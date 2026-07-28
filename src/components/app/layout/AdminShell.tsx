@@ -1,18 +1,13 @@
-import { useState, type ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 
 import { AdminSidebar } from "@/components/app/layout/AdminSidebar";
 import { AdminTopBar } from "@/components/app/layout/AdminTopBar";
 import { MobileBottomNavigation } from "@/components/app/layout/MobileBottomNavigation";
 import { MobileHeader } from "@/components/app/layout/MobileHeader";
 import { PageContainer } from "@/components/app/layout/PageContainer";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import type { AdminRoute } from "@/lib/admin/routes";
 import { cn } from "@/lib/utils";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
 
 interface AdminShellProps {
   route: AdminRoute;
@@ -44,7 +39,7 @@ export function AdminShell({
   return (
     <div className="min-h-dvh bg-background text-ink">
       <div className="flex min-h-dvh">
-        <div className="hidden lg:block">
+        <div className="hidden xl:block">
           <AdminSidebar
             route={route}
             isOnline={isOnline}
@@ -63,10 +58,7 @@ export function AdminShell({
             />
           </div>
 
-          <MobileHeader
-            onOpenMenu={() => setDrawerOpen(true)}
-            onNavigate={handleNavigate}
-          />
+          <MobileHeader onOpenMenu={() => setDrawerOpen(true)} onNavigate={handleNavigate} />
 
           {offlineBanner}
 

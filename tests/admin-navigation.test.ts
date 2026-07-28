@@ -14,16 +14,34 @@ describe("admin navigation contracts", () => {
       "overview",
       "products",
       "customers",
-      "ledger",
+      "purchase",
       "more",
     ]);
   });
 
-  test("sidebar includes overview, products, and customers", () => {
+  test("sidebar exposes only destinations that can be opened without a selected record", () => {
     const ids = ADMIN_SIDEBAR_NAV.map((item) => item.id);
-    expect(ids).toContain("overview");
-    expect(ids).toContain("products");
-    expect(ids).toContain("customers");
+    expect(ids).toEqual(["overview", "products", "customers", "purchase", "payment"]);
+  });
+
+  test("marks only one sidebar item active for contextual detail routes", () => {
+    const priceHistory = parseAdminLocation(
+      "/admin/products/00000000-0000-4000-8000-000000000001/price-history",
+    );
+    const customerLedger = parseAdminLocation(
+      "/admin/customers/00000000-0000-4000-8000-000000000001/ledger",
+    );
+
+    expect(
+      ADMIN_SIDEBAR_NAV.filter((item) => isAdminNavItemActive(item, priceHistory)).map(
+        (item) => item.id,
+      ),
+    ).toEqual(["products"]);
+    expect(
+      ADMIN_SIDEBAR_NAV.filter((item) => isAdminNavItemActive(item, customerLedger)).map(
+        (item) => item.id,
+      ),
+    ).toEqual(["customers"]);
   });
 
   test("marks the matching route active without treating entry as overview", () => {
@@ -32,22 +50,13 @@ describe("admin navigation contracts", () => {
     const entry = parseAdminLocation("/admin");
 
     expect(
-      isAdminNavItemActive(
-        ADMIN_SIDEBAR_NAV.find((item) => item.id === "overview")!,
-        overview,
-      ),
+      isAdminNavItemActive(ADMIN_SIDEBAR_NAV.find((item) => item.id === "overview")!, overview),
     ).toBe(true);
     expect(
-      isAdminNavItemActive(
-        ADMIN_SIDEBAR_NAV.find((item) => item.id === "products")!,
-        products,
-      ),
+      isAdminNavItemActive(ADMIN_SIDEBAR_NAV.find((item) => item.id === "products")!, products),
     ).toBe(true);
     expect(
-      isAdminNavItemActive(
-        ADMIN_SIDEBAR_NAV.find((item) => item.id === "overview")!,
-        entry,
-      ),
+      isAdminNavItemActive(ADMIN_SIDEBAR_NAV.find((item) => item.id === "overview")!, entry),
     ).toBe(false);
   });
 });

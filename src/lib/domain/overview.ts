@@ -3,11 +3,7 @@
  * Aging uses days since each customer's oldest non-voided debt while balance > 0.
  */
 
-export type AgingBucketId =
-  | "current"
-  | "late-1-7"
-  | "late-8-30"
-  | "late-30-plus";
+export type AgingBucketId = "current" | "late-1-7" | "late-8-30" | "late-30-plus";
 
 export const AGING_BUCKET_DEFS: Array<{
   id: AgingBucketId;
@@ -51,6 +47,55 @@ export function emptyAgingCounts(): Record<AgingBucketId, number> {
   };
 }
 
+export function getBalanceSnapshotBuckets(
+  customerCount: number,
+  agingBuckets: Array<{
+    id: AgingBucketId;
+    label: string;
+    customerCount: number;
+  }>,
+) {
+  const normalizedCustomerCount = Math.max(0, customerCount);
+  const outstandingCustomerCount = agingBuckets.reduce(
+    (total, bucket) => total + Math.max(0, bucket.customerCount),
+    0,
+  );
+  const settledCustomerCount = Math.max(0, normalizedCustomerCount - outstandingCustomerCount);
+
+  return agingBuckets.map((bucket) =>
+    bucket.id === "current"
+      ? {
+          ...bucket,
+          label: "No overdue balance",
+          customerCount: bucket.customerCount + settledCustomerCount,
+        }
+      : { ...bucket },
+  );
+}
+
+export function formatOverviewMoney(amount: number): string {
+  return new Intl.NumberFormat("en-PH", {
+    style: "currency",
+    currency: "PHP",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+}
+
+export function formatManilaDateKey(date: Date): string {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: "Asia/Manila",
+  }).formatToParts(date);
+  const values = Object.fromEntries(
+    parts.filter((part) => part.type !== "literal").map((part) => [part.type, part.value]),
+  );
+
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
 export function formatOverviewGreeting(hour: number): string {
   if (hour >= 5 && hour < 12) {
     return "Magandang umaga";
@@ -62,15 +107,11 @@ export function formatOverviewGreeting(hour: number): string {
 }
 
 export function overviewWeekLabel(date: Date): string {
-  const target = new Date(
-    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
-  );
+  const target = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
   const dayNum = target.getUTCDay() || 7;
   target.setUTCDate(target.getUTCDate() + 4 - dayNum);
   const yearStart = new Date(Date.UTC(target.getUTCFullYear(), 0, 1));
-  const week = Math.ceil(
-    ((target.getTime() - yearStart.getTime()) / 86_400_000 + 1) / 7,
-  );
+  const week = Math.ceil(((target.getTime() - yearStart.getTime()) / 86_400_000 + 1) / 7);
   return `Week ${week}`;
 }
 

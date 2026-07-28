@@ -5,6 +5,8 @@ import {
   classifyAgingBucket,
   daysBetweenDates,
   emptyAgingCounts,
+  formatManilaDateKey,
+  formatOverviewMoney,
 } from "@/lib/domain/overview";
 import type {
   OverviewActivityItem,
@@ -16,8 +18,8 @@ import type {
 const ACTIVITY_LIMIT = 8;
 const TOP_BALANCES_LIMIT = 5;
 
-function todayUtcDate(): string {
-  return new Date().toISOString().slice(0, 10);
+function todayInManila(): string {
+  return formatManilaDateKey(new Date());
 }
 
 function toIsoTimestamp(value: unknown): string {
@@ -33,13 +35,9 @@ function toIsoTimestamp(value: unknown): string {
   return new Date(0).toISOString();
 }
 
-function formatPeso(amount: number): string {
-  return `₱${amount.toFixed(2)}`;
-}
-
 export const getOwnerSummary = async (): Promise<OwnerSummary> => {
   const sql = getSql();
-  const today = todayUtcDate();
+  const today = todayInManila();
 
   const [countsRow] = await sql`
     select
@@ -147,8 +145,7 @@ export const getOwnerSummary = async (): Promise<OwnerSummary> => {
 
   for (const row of ledgerActivityRows) {
     const entryType = String(row.entry_type);
-    const kind: OverviewActivityKind =
-      entryType === "payment" ? "payment" : "purchase";
+    const kind: OverviewActivityKind = entryType === "payment" ? "payment" : "purchase";
     const amount =
       kind === "payment"
         ? parseMoney(String(row.payment_amount ?? 0))
@@ -157,7 +154,7 @@ export const getOwnerSummary = async (): Promise<OwnerSummary> => {
       id: `ledger:${String(row.id)}`,
       kind,
       title: kind === "payment" ? "Payment recorded" : "Purchase recorded",
-      detail: `${String(row.customer_name)} · ${formatPeso(amount)}`,
+      detail: `${String(row.customer_name)} · ${formatOverviewMoney(amount)}`,
       occurredAt: toIsoTimestamp(row.created_at ?? row.entry_date),
     });
   }
@@ -167,7 +164,7 @@ export const getOwnerSummary = async (): Promise<OwnerSummary> => {
       id: `price:${String(row.id)}`,
       kind: "price_change",
       title: "Price updated",
-      detail: `${String(row.product_name)} · ${formatPeso(parseMoney(String(row.old_selling_price ?? 0)))} → ${formatPeso(parseMoney(String(row.new_selling_price ?? 0)))}`,
+      detail: `${String(row.product_name)} · ${formatOverviewMoney(parseMoney(String(row.old_selling_price ?? 0)))} → ${formatOverviewMoney(parseMoney(String(row.new_selling_price ?? 0)))}`,
       occurredAt: toIsoTimestamp(row.changed_at),
     });
   }
@@ -182,9 +179,7 @@ export const getOwnerSummary = async (): Promise<OwnerSummary> => {
     });
   }
 
-  recentActivity.sort(
-    (a, b) => Date.parse(b.occurredAt) - Date.parse(a.occurredAt),
-  );
+  recentActivity.sort((a, b) => Date.parse(b.occurredAt) - Date.parse(a.occurredAt));
 
   return {
     activeProductCount: Number(countsRow?.active_product_count ?? 0),

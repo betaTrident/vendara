@@ -45,10 +45,11 @@ describe("offline page contracts", () => {
     expect(content).toContain("OFFLINE_PAGE_COPY.tryAgain");
     expect(content).toContain("OFFLINE_PAGE_COPY.lastView");
     expect(content).toContain("OFFLINE_PAGE_COPY.tips");
-    expect(content).toContain("OfflineTipsDialog");
-    expect(content).toContain("VendaraLogo");
+    expect(content).toContain("BRAND_WORDMARK_DARK_URL");
+    expect(content).toContain("BRAND_WORDMARK_LIGHT_URL");
     expect(page).toContain("ThemeProvider");
     expect(astro).toContain("OfflinePage");
+    expect(content).not.toContain("VendaraLogo");
   });
 
   it("last available view uses validated session storage helper", () => {

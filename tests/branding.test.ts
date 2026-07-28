@@ -1,4 +1,4 @@
-import { readFileSync, existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 import { describe, expect, test } from "vitest";
@@ -18,6 +18,30 @@ describe("brand assets and logo boundary", () => {
     }
   });
 
+  test("uses light-modee.svg as the only canonical light wordmark source", () => {
+    const canonicalLightSource = "src/components/app/assets/logo/light-modee.svg";
+    const brandAssets = readFileSync(resolve(process.cwd(), "src/lib/brand-assets.ts"), "utf8");
+    const optimizer = readFileSync(
+      resolve(process.cwd(), "scripts/optimize-brand-assets.mjs"),
+      "utf8",
+    );
+
+    expect(brandAssets).toContain(`lightWordmark: "${canonicalLightSource}"`);
+    expect(optimizer).toContain(canonicalLightSource);
+    expect(optimizer).not.toContain("src/components/app/assets/logo/light-mode.svg");
+    expect(optimizer).not.toContain("LIGHT_SOURCE_CANDIDATES");
+  });
+
+  test("does not silently replace optimized derivatives with full source SVGs", () => {
+    const optimizer = readFileSync(
+      resolve(process.cwd(), "scripts/optimize-brand-assets.mjs"),
+      "utf8",
+    );
+
+    expect(optimizer).not.toContain("writeFileSync(resolve(outDir, outName), svg)");
+    expect(optimizer).toContain("Reusing the checked-in optimized derivative");
+  });
+
   test("VendaraLogo is the single typed brand boundary", () => {
     const source = readFileSync(
       resolve(process.cwd(), "src/components/app/branding/VendaraLogo.tsx"),
@@ -30,14 +54,8 @@ describe("brand assets and logo boundary", () => {
   });
 
   test("placeholder rose marks are removed from shared chrome", () => {
-    const topBar = readFileSync(
-      resolve(process.cwd(), "src/components/app/AppTopBar.tsx"),
-      "utf8",
-    );
-    const login = readFileSync(
-      resolve(process.cwd(), "src/components/app/AdminLogin.tsx"),
-      "utf8",
-    );
+    const topBar = readFileSync(resolve(process.cwd(), "src/components/app/AppTopBar.tsx"), "utf8");
+    const login = readFileSync(resolve(process.cwd(), "src/components/app/AdminLogin.tsx"), "utf8");
 
     expect(topBar).toContain("VendaraLogo");
     expect(topBar).not.toContain("#ff385c");
@@ -46,10 +64,7 @@ describe("brand assets and logo boundary", () => {
   });
 
   test("BaseLayout bootstraps theme before paint", () => {
-    const layout = readFileSync(
-      resolve(process.cwd(), "src/layouts/BaseLayout.astro"),
-      "utf8",
-    );
+    const layout = readFileSync(resolve(process.cwd(), "src/layouts/BaseLayout.astro"), "utf8");
     const theme = readFileSync(resolve(process.cwd(), "src/lib/theme.ts"), "utf8");
 
     expect(layout).toContain("THEME_BOOTSTRAP_SCRIPT");

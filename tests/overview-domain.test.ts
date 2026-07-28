@@ -5,7 +5,10 @@ import {
   classifyAgingBucket,
   daysBetweenDates,
   emptyAgingCounts,
+  formatManilaDateKey,
   formatOverviewGreeting,
+  formatOverviewMoney,
+  getBalanceSnapshotBuckets,
   overviewWeekLabel,
 } from "@/lib/domain/overview";
 
@@ -29,9 +32,7 @@ describe("overview domain helpers", () => {
     expect(formatOverviewGreeting(9)).toBe("Magandang umaga");
     expect(formatOverviewGreeting(13)).toBe("Magandang hapon");
     expect(formatOverviewGreeting(20)).toBe("Magandang gabi");
-    expect(overviewWeekLabel(new Date("2026-07-25T04:00:00.000Z"))).toMatch(
-      /Week \d+/i,
-    );
+    expect(overviewWeekLabel(new Date("2026-07-25T04:00:00.000Z"))).toMatch(/Week \d+/i);
     expect(formatOverviewGreeting(9)).not.toMatch(/Aling|Nena|Juan/i);
   });
 
@@ -43,5 +44,27 @@ describe("overview domain helpers", () => {
       "late-8-30": 0,
       "late-30-plus": 0,
     });
+  });
+
+  test("builds a complete balance snapshot without mislabeling settled customers", () => {
+    const buckets = getBalanceSnapshotBuckets(10, [
+      { id: "current", label: "Current", customerCount: 2 },
+      { id: "late-1-7", label: "1–7 days late", customerCount: 1 },
+      { id: "late-8-30", label: "8–30 days late", customerCount: 1 },
+      { id: "late-30-plus", label: "Over 30 days", customerCount: 1 },
+    ]);
+
+    expect(buckets).toEqual([
+      { id: "current", label: "No overdue balance", customerCount: 7 },
+      { id: "late-1-7", label: "1–7 days late", customerCount: 1 },
+      { id: "late-8-30", label: "8–30 days late", customerCount: 1 },
+      { id: "late-30-plus", label: "Over 30 days", customerCount: 1 },
+    ]);
+    expect(buckets.reduce((total, bucket) => total + bucket.customerCount, 0)).toBe(10);
+  });
+
+  test("formats dashboard money and the database aging date for Manila", () => {
+    expect(formatOverviewMoney(28_640.75)).toBe("₱28,640.75");
+    expect(formatManilaDateKey(new Date("2026-07-27T16:30:00.000Z"))).toBe("2026-07-28");
   });
 });
